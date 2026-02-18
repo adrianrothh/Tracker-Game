@@ -60,6 +60,7 @@ RNF01 – Tempo de resposta inferior a 2s
 RNF02 – Sistema responsivo
 
 RNF03 – Autenticação segura via JWT
+
 ---
 
 ##  Requisitos Acadêmicos
