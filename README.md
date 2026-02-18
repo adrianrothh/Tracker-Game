@@ -1,4 +1,4 @@
-# 🎯 Valorant Tracker
+Valorant Tracker
 
 ![CI](https://github.com/seu-user/valorant-tracker/actions/workflows/ci.yml/badge.svg)
 ![Deploy](https://img.shields.io/badge/deploy-Railway-purple)
