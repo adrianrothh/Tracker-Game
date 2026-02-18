@@ -1,105 +1,116 @@
-# Tracker-Game
-Tracker de Jogo
- 1. Sobre o Projeto
+# 🎯 Valorant Tracker
 
-O Tracker de Jogo é um sistema web desenvolvido com o objetivo de permitir que jogadores acompanhem seu desempenho em jogos, registrando estatísticas, progresso, metas e histórico de partidas.
+![CI](https://github.com/seu-user/valorant-tracker/actions/workflows/ci.yml/badge.svg)
+![Deploy](https://img.shields.io/badge/deploy-Railway-purple)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-O sistema busca resolver o problema da falta de organização e análise de desempenho individual em jogos competitivos e casuais.
+Aplicação web para acompanhar estatísticas de jogadores de Valorant:
+rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
 
-2. Domínio do Problema
+> Projeto desenvolvido para a disciplina de Desenvolvimento Web · 2025
 
-Não possuem controle detalhado de suas estatísticas
+---
 
-Não conseguem visualizar evolução ao longo do tempo
+# Stack
 
-Não têm organização de metas e objetivos
+| Camada       | Tecnologia                          |
+|--------------|-------------------------------------|
+| Frontend     | React + Vite + React Router         |
+| Backend      | Node.js + Express                   |
+| Banco        | MySQL (XAMPP local / Railway prod)  |
+| ORM          | Prisma                              |
+| Auth         | JWT (jsonwebtoken + bcryptjs)       |
+| Deploy       | Railway (backend) + Vercel (front)  |
+| CI/CD        | GitHub Actions                      |
+| Dados        | Henrik-3 Valorant API               |
+| Testes       | Jest                                |
+| Observab.    | Sentry + morgan + endpoint /health  |
 
-Dependem apenas dos dados fornecidos pelo próprio jogo
+---
 
-O Tracker permite que o usuário registre e acompanhe seus dados de forma personalizada.
+## 📐 Arquitetura
 
-3. Público-Alvo
+Arquitetura monolítica com separação em camadas (MVC):
+routes → controllers → services → repositories → Prisma
 
-Jogadores competitivos
+```
+React + Vite (Vercel)
+        ↕ REST / JSON
+Node.js + Express (Railway)
+     ↙           ↘
+  MySQL      Henrik Valorant API
+(Railway)
+        ↓
+       Sentry (observabilidade)
+```
 
-Jogadores casuais
+---
 
-Streamers
+##  Requisitos Acadêmicos
 
-Times de eSports
+- [x] CRUD completo (módulo de favoritos)
+- [x] Transação atômica (Favorite + RankSnapshot)
+- [x] REST API com arquitetura MVC
+- [x] Autenticação com JWT
+- [x] Arquitetura monolítica com módulos
+- [x] Repositório Git com README e Wiki
+- [x] CI/CD (GitHub Actions → Railway)
+- [x] TDD (testes unitários com Jest)
+- [x] Deploy em produção (online e acessível)
+- [x] Observabilidade (Sentry + morgan + /health)
 
-4. Requisitos
-Requisitos Funcionais (RF)
+---
 
-RF01 – O sistema deve permitir cadastro de usuário
+##  Como rodar localmente
 
-RF02 – O usuário deve poder cadastrar jogos
+**Pré-requisitos:** Node.js 18+, XAMPP com MySQL rodando
 
-RF03 – O usuário deve registrar estatísticas de partidas
+```bash
+# Clone o repositório
+git clone https://github.com/seu-user/valorant-tracker
+cd valorant-tracker
 
-RF04 – O sistema deve exibir histórico de desempenho
+# Backend
+cd backend
+cp .env.example .env
+# Edite .env: DATABASE_URL, JWT_SECRET, HENRIK_API_KEY
+npm install
+npx prisma migrate dev
+npm run dev        # http://localhost:3000
 
-RF05 – O sistema deve apresentar gráficos de evolução
+# Frontend (outro terminal)
+cd frontend
+cp .env.example .env
+# Edite .env: VITE_API_URL=http://localhost:3000
+npm install
+npm run dev        # http://localhost:5173
+```
 
-Requisitos Não Funcionais (RNF)
+---
 
-RNF01 – O sistema deve ser responsivo (desktop e mobile)
+##  Testes
 
-RNF02 – O sistema deve possuir autenticação segura
+```bash
+cd backend
+npm test           # roda todos os testes
+npm run test:watch # modo watch durante desenvolvimento
+```
 
-RNF03 – O sistema deve garantir integridade dos dados
+---
 
-RNF04 – O tempo de resposta deve ser inferior a 2 segundos
+## Equipe
 
-5. Tecnologias Utilizadas
+| Nome       | Responsabilidade                       |
+|------------|----------------------------------------|
+| Pessoa 1   | Backend, Prisma, Auth, CI/CD, Sentry   |
+| Pessoa 2   | Frontend, React, Integração de APIs    |
 
-Exemplo (você adapta ao que vai usar):
+---
 
-🔹 Frontend
+## Wiki
 
-React – Para criação de interface dinâmica e componentizada
-
-🔹 Backend
-
-Node.js – Para construção da API REST
-
-Express – Para gerenciamento de rotas
-
-🔹 Banco de Dados
-
-MySQL – Para armazenamento estruturado das estatísticas
-
-🔹 Versionamento
-
-Git + GitHub – Para controle de versão e colaboração
-
-6. Organização da Equipe (Dupla)
-Integrante 1
-
-Desenvolvimento Backend
-
-Modelagem do Banco de Dados
-
-Implementação da API
-
-Integrante 2
-
-Desenvolvimento Frontend
-
-Interface e Experiência do Usuário
-
-Integração com API
-
-7. Organização de Tarefas
-
-Metodologia simples baseada em divisão por funcionalidades:
-
-Sistema de autenticação
-
-Cadastro de jogos
-
-Registro de partidas
-
-Dashboard com estatísticas
-
-Testes
+Consulte a [Wiki](../../wiki) para:
+- Decisões arquiteturais (ADRs)
+- Diagrama ER do banco de dados
+- Documentação dos endpoints REST
+- Guia de contribuição e fluxo de branches
