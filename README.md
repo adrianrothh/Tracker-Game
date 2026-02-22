@@ -10,13 +10,23 @@ rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
 
 ---
 
-# Stack
+# Stack MVP
 
 | Camada       | Tecnologia                          |
 |--------------|-------------------------------------|
 | Frontend     | React + Vite + React Router         |
 | Backend      | Node.js + Express                   |
-| Banco        | MySQL (XAMPP local / Railway prod)  |
+| Banco        | MySQL (XAMPP local)                 |
+| Dados        | Henrik-3 Valorant API               |
+
+
+# Stack COMPLETA
+
+| Camada       | Tecnologia                          |
+|--------------|-------------------------------------|
+| Frontend     | React + Vite + React Router         |
+| Backend      | Node.js + Express                   |
+| Banco        | MySQL (Railway)                     |
 | ORM          | Prisma                              |
 | Auth         | JWT (jsonwebtoken + bcryptjs)       |
 | Deploy       | Railway (backend) + Vercel (front)  |
