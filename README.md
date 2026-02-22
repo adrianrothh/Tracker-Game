@@ -42,23 +42,6 @@ Node.js + Express (Railway)
         ↓
        Sentry (observabilidade)
 ```
-## RF
-
-RF01 – Permitir cadastro de usuário
-
-RF02 – Permitir login
-
-RF03 – Consultar estatísticas via API externa
-
-RF04 – Favoritar jogadores
-
-RNF
-
-RNF01 – Tempo de resposta inferior a 2s
-
-RNF02 – Sistema responsivo
-
-RNF03 – Autenticação segura via JWT
 
 ---
 
