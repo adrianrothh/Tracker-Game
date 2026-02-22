@@ -1,7 +1,5 @@
 # Valorant Tracker
 
-![Deploy](https://img.shields.io/badge/deploy-Railway-purple)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 Aplicação web para Acompanhar estatísticas de jogadores de Valorant:
 rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
