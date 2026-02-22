@@ -1,4 +1,4 @@
-Valorant Tracker
+# Valorant Tracker
 
 ![Deploy](https://img.shields.io/badge/deploy-Railway-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
