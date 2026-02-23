@@ -8,12 +8,12 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 
 # Stack MVP
 
-| Camada       | Tecnologia                          |
-|--------------|-------------------------------------|
-| Frontend     | React + Vite + React Router         |
-| Backend      | Node.js + Express                   |
-| Banco        | MySQL (XAMPP local)                 |
-| Dados        | Henrik-3 Valorant API               |
+| Camada       | Tecnologia                          | Justificativas                   |
+|--------------|-------------------------------------|----------------------------------|
+| Frontend     | React + Vite + React Router         | Componentes reutilizaveis, SPA   |
+| Backend      | Node.js + Express                   | Ambiente JS + Framework API REST |
+| Banco        | MySQL (XAMPP local)                 | BD relacional                    |
+| Dados        | Henrik-3 Valorant API               | API externa                      |
 
 
 # Stack COMPLETA - Não é definitiva
