@@ -52,9 +52,10 @@ Node.js + Express
 
 ## Equipe
 
-| Nome       | Responsabilidade                       |
-|------------|----------------------------------------|
-| Adrian     | Backend, Prisma, Auth, CI/CD, Sentry   |
-| Gustavo    | Frontend, React, Integração de APIs    |
+| Nome       | Responsabilidade                           |
+|------------|--------------------------------------------|
+| Adrian     | Backend, Banco, CRUD, Integração API       |
+| Gustavo    | Frontend, React, Integração com Backend    |
+
 
 Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
