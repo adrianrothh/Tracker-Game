@@ -41,14 +41,11 @@ Arquitetura monolítica com separação em camadas (MVC):
 routes → controllers → services → repositories → Prisma
 
 ```
-React + Vite (Vercel)
+React + Vite (Frontend - local)
         ↕ REST / JSON
-Node.js + Express (Railway)
-     ↙           ↘
-  MySQL      Henrik Valorant API
-(Railway)
-        ↓
-       Sentry (observabilidade)
+Node.js + Express (Backend monolítico - local)
+     ↙                     ↘
+ MySQL (XAMPP local)      Henrik Valorant API
 ```
 
 ---
