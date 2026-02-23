@@ -59,3 +59,5 @@ Node.js + Express (Railway)
 |------------|----------------------------------------|
 | Adrian     | Backend, Prisma, Auth, CI/CD, Sentry   |
 | Gustavo    | Frontend, React, Integração de APIs    |
+
+Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
