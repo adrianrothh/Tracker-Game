@@ -18,7 +18,7 @@ rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
 | Dados        | Henrik-3 Valorant API               |
 
 
-# Stack COMPLETA
+# Stack COMPLETA - Não é definitiva
 
 | Camada       | Tecnologia                          |
 |--------------|-------------------------------------|
