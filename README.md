@@ -41,9 +41,9 @@ Arquitetura monolítica com separação em camadas (MVC):
 routes → controllers → services → repositories → database
 
 ```
-React + Vite (Frontend - local)
+React + Vite
         ↕ REST / JSON
-Node.js + Express (Backend monolítico - local)
+Node.js + Express
      ↙                     ↘
  MySQL (XAMPP local)      Henrik Valorant API
 ```
