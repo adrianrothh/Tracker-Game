@@ -1,10 +1,8 @@
 # Valorant Tracker
 
-
 Aplicação web para Acompanhar estatísticas de jogadores de Valorant:
 rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
-
-> Projeto desenvolvido para a disciplina de Desenvolvimento Web · 2025
+O objetivo é permitir que jogadores analisem sua performance individual e coletiva ao longo do tempo.
 
 ---
 
@@ -31,7 +29,7 @@ rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
 | CI/CD        | GitHub Actions                      |
 | Dados        | Henrik-3 Valorant API               |
 | Testes       | Jest                                |
-| Observab.    | Sentry + morgan + endpoint /health  |
+| Observab.    | Sentry                              |
 
 ---
 
