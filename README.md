@@ -38,7 +38,7 @@ rank, histórico de partidas, K/D ratio e evolução ao longo do tempo.
 ## 📐 Arquitetura
 
 Arquitetura monolítica com separação em camadas (MVC):
-routes → controllers → services → repositories → Prisma
+routes → controllers → services → repositories → database
 
 ```
 React + Vite (Frontend - local)
