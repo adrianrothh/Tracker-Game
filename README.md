@@ -74,6 +74,16 @@ RF19 – O sistema deve permitir navegação entre páginas por meio de rotas no
 
 RF20 – O sistema deve exibir mensagens de erro apropriadas quando ocorrerem falhas, como jogador não encontrado, indisponibilidade da API ou credenciais inválidas.
 
+RF21 – O sistema deve armazenar localmente os dados dos jogadores consultados.
+
+RF22 – O sistema deve verificar se os dados do jogador estão atualizados antes de consultar a API externa.
+
+RF23 – O sistema deve permitir atualização manual dos dados do jogador.
+
+RF24 – O sistema deve armazenar o histórico de partidas no banco de dados.
+
+RF25 – O sistema deve impedir o armazenamento duplicado de partidas.
+
 # RNF
 
 RNF01 – O sistema deve responder às requisições em até 3 segundos em condições normais de rede.
@@ -107,6 +117,12 @@ RNF14 – O sistema deve possuir testes unitários automatizados.
 RNF15 – O sistema deve possuir monitoramento de erros em ambiente de produção.
 
 RNF16 – O sistema deve permitir deploy em ambiente de nuvem para frontend e backend.
+
+RNF17 – O sistema deve implementar estratégia de cache baseada em data de atualização.
+
+RNF18 – O sistema deve garantir integridade referencial entre usuários, jogadores e partidas.
+
+RNF19 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
 
 ---
 
