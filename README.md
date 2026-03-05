@@ -110,7 +110,7 @@ RNF11 – O código-fonte deve ser versionado utilizando Git.
 
 RNF12 – O sistema deve ser compatível com os navegadores Google Chrome, Microsoft Edge e Mozilla Firefox.
 
-RNF13 – O sistema deve possuir interface responsiva para desktop e dispositivos móveis.
+RNF13 – O sistema deve possuir interface responsiva para desktop.
 
 RNF14 – O sistema deve possuir testes unitários automatizados.
 
