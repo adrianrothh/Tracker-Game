@@ -1,0 +1,79 @@
+@startuml DER_ValorantTracker
+
+skinparam linetype ortho
+skinparam backgroundColor #f8fafc
+
+skinparam entity {
+  BackgroundColor #ffffff
+  BorderColor #0ea5e9
+  FontColor #1e293b
+  FontSize 13
+}
+
+skinparam class {
+  BackgroundColor #ffffff
+  BorderColor #0ea5e9
+  FontColor #1e293b
+  HeaderBackgroundColor #0284c7
+  HeaderFontColor #ffffff
+  FontSize 12
+}
+
+entity "Usuarios" as usuarios {
+  * **id** : INT <<PK>>
+  --
+  nome : VARCHAR(100)
+  * email : VARCHAR(150) <<UQ>>
+  senha : VARCHAR(255)
+  criado_em : DATETIME
+}
+
+entity "Jogadores" as jogadores {
+  * **id** : INT <<PK>>
+  --
+  riot_id : VARCHAR(100)
+  * puuid : VARCHAR(120) <<UQ>>
+  atualizado_em : DATETIME
+  criado_em : DATETIME
+}
+
+entity "Favoritos" as favoritos {
+  * **id** : INT <<PK>>
+  --
+  * usuario_id : INT <<FK>>
+  * jogador_id : INT <<FK>>
+  criado_em : DATETIME
+}
+
+entity " Rank_snapshots" as rank_snapshots {
+  * **id** : INT <<PK>>
+  --
+  * jogador_id : INT <<FK>>
+  rank : VARCHAR(50)
+  rr : INT
+  data_coleta : DATETIME
+}
+
+entity "Partidas" as partidas {
+  * **id** : INT <<PK>>
+  --
+  * jogador_id : INT <<FK>>
+  * match_id : VARCHAR(100) <<UQ>>
+  mapa : VARCHAR(100)
+  agente : VARCHAR(100)
+  kills : INT
+  deaths : INT
+  assists : INT
+  kdr : DECIMAL(4,2)
+  resultado : VARCHAR(20)
+  data_partida : DATETIME
+  criado_em : DATETIME
+}
+
+' Relacionamentos
+usuarios ||--o{ favoritos : "1:N favorita"
+jogadores ||--o{ favoritos : "1:N pertence"
+jogadores ||--o{ rank_snapshots : "1:N evolução"
+jogadores ||--o{ partidas : "1:N histórico"
+
+@enduml

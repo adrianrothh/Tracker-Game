@@ -1,0 +1,62 @@
+@startuml
+
+title Valorant Tracker - C2 + C3 Architecture
+
+' =========================
+' IMPORT C4 LIBRARY
+' =========================
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+' ==================================================
+' C2 — CONTAINER DIAGRAM
+' ==================================================
+
+Person(user, "Jogador", "Usuário que consulta estatísticas")
+
+System_Boundary(valorantSystem, "Valorant Tracker") {
+
+Container(frontend, "Frontend", "React + Vite", "Interface web utilizada pelos jogadores")
+
+Container(api, "Backend API", "Node.js + Express", "Fornece endpoints REST para o sistema")
+
+ContainerDb(db, "Database", "MySQL", "Armazena usuários, jogadores e partidas")
+
+}
+
+System_Ext(valorantAPI, "Henrik Valorant API", "API externa com dados do jogo")
+
+Rel(user, frontend, "Usa pelo navegador")
+Rel(frontend, api, "REST / JSON")
+Rel(api, db, "Lê e grava dados")
+Rel(api, valorantAPI, "Consulta estatísticas")
+
+
+' ==================================================
+' C3 — COMPONENT DIAGRAM (Backend)
+' ==================================================
+
+Container_Boundary(api_components, "Backend Components") {
+
+Component(routes, "Routes", "Express Router", "Define endpoints da API")
+
+Component(controllers, "Controllers", "Node.js", "Recebem requisições HTTP e validam dados")
+
+Component(services, "Services", "Node.js", "Implementam regras de negócio")
+
+Component(repositories, "Repositories", "Node.js", "Acesso ao banco de dados")
+
+Component(valorantIntegration, "Valorant API Integration", "HTTP Client", "Comunicação com API externa")
+
+}
+
+Rel(routes, controllers, "Encaminha requisições")
+Rel(controllers, services, "Chama regras de negócio")
+Rel(services, repositories, "Consulta e salva dados")
+Rel(repositories, db, "SQL")
+
+Rel(services, valorantIntegration, "Busca dados externos")
+Rel(valorantIntegration, valorantAPI, "HTTP")
+
+@enduml
