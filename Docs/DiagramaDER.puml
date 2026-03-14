@@ -43,6 +43,8 @@ entity "Favoritos" as favoritos {
   * usuario_id : INT <<FK>>
   * jogador_id : INT <<FK>>
   criado_em : DATETIME
+  --
+  <<UQ>> usuario_id + jogador_id
 }
 
 entity " Rank_snapshots" as rank_snapshots {
