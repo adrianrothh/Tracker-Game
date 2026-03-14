@@ -1,5 +1,4 @@
 @startuml
-
 title Valorant Tracker - C2 + C3 Architecture
 
 ' =========================
@@ -39,6 +38,9 @@ Rel(api, valorantAPI, "Consulta estatísticas")
 
 Container_Boundary(api_components, "Backend Components") {
 
+Component(authMiddleware, "Auth Middleware", "JWT", "Valida token nas rotas privadas")
+Component(cache, "Cache Manager", "Node.js", "Verifica atualização antes de chamar API")
+
 Component(routes, "Routes", "Express Router", "Define endpoints da API")
 
 Component(controllers, "Controllers", "Node.js", "Recebem requisições HTTP e validam dados")
@@ -58,5 +60,8 @@ Rel(repositories, db, "SQL")
 
 Rel(services, valorantIntegration, "Busca dados externos")
 Rel(valorantIntegration, valorantAPI, "HTTP")
-
+Rel(routes, authMiddleware, "Intercepta rotas privadas")
+Rel(authMiddleware, controllers, "Repassa se autorizado")
+Rel(services, cache, "Consulta antes da API")
+Rel(cache, valorantIntegration, "Chama só se cache expirado")
 @enduml
