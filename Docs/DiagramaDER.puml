@@ -1,26 +1,7 @@
-@startuml DER_ValorantTracker
+@startuml
 
-skinparam linetype ortho
-skinparam backgroundColor #f8fafc
-
-skinparam entity {
-  BackgroundColor #ffffff
-  BorderColor #0ea5e9
-  FontColor #1e293b
-  FontSize 13
-}
-
-skinparam class {
-  BackgroundColor #ffffff
-  BorderColor #0ea5e9
-  FontColor #1e293b
-  HeaderBackgroundColor #0284c7
-  HeaderFontColor #ffffff
-  FontSize 12
-}
-
-entity "Usuarios" as usuarios {
-  * **id** : INT <<PK>>
+entity Usuarios {
+  * id : INT <<PK>>
   --
   nome : VARCHAR(100)
   * email : VARCHAR(150) <<UQ>>
@@ -28,17 +9,18 @@ entity "Usuarios" as usuarios {
   criado_em : DATETIME
 }
 
-entity "Jogadores" as jogadores {
-  * **id** : INT <<PK>>
+entity Jogadores {
+  * id : INT <<PK>>
   --
-  riot_id : VARCHAR(100)
-  * puuid : VARCHAR(120) <<UQ>>
+  * riot_name : VARCHAR(100)
+  * riot_tag : VARCHAR(50)
+  puuid : VARCHAR(120) <<UQ>>
   atualizado_em : DATETIME
   criado_em : DATETIME
 }
 
-entity "Favoritos" as favoritos {
-  * **id** : INT <<PK>>
+entity Favoritos {
+  * id : INT <<PK>>
   --
   * usuario_id : INT <<FK>>
   * jogador_id : INT <<FK>>
@@ -47,8 +29,8 @@ entity "Favoritos" as favoritos {
   <<UQ>> usuario_id + jogador_id
 }
 
-entity " Rank_snapshots" as rank_snapshots {
-  * **id** : INT <<PK>>
+entity Rank_snapshots {
+  * id : INT <<PK>>
   --
   * jogador_id : INT <<FK>>
   rank : VARCHAR(50)
@@ -56,12 +38,13 @@ entity " Rank_snapshots" as rank_snapshots {
   data_coleta : DATETIME
 }
 
-entity "Partidas" as partidas {
-  * **id** : INT <<PK>>
+entity Partidas {
+  * id : INT <<PK>>
   --
   * jogador_id : INT <<FK>>
   * match_id : VARCHAR(100) <<UQ>>
   mapa : VARCHAR(100)
+  modo : VARCHAR(50)
   agente : VARCHAR(100)
   kills : INT
   deaths : INT
@@ -72,10 +55,9 @@ entity "Partidas" as partidas {
   criado_em : DATETIME
 }
 
-' Relacionamentos
-usuarios ||--o{ favoritos : "1:N favorita"
-jogadores ||--o{ favoritos : "1:N pertence"
-jogadores ||--o{ rank_snapshots : "1:N evolução"
-jogadores ||--o{ partidas : "1:N histórico"
+Usuarios ||--o{ Favoritos : "1:N favoritia"
+Jogadores ||--o{ Favoritos : "1:N pertence"
+Jogadores ||--o{ Rank_snapshots : "1:N evolução"
+Jogadores ||--o{ Partidas : "1:N histórico"
 
 @enduml
