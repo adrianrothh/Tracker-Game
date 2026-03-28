@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "data": {
+    "puuid": "54942ced-1967-5f66-8a16-1e0dae875641",
+    "region": "br",
+    "account_level": 105,
+    "name": "Gusgb4 シ",
+    "tag": "yikes",
+    "card": {
+      "small": "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png",
+      "large": "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/largeart.png",
+      "wide": "https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png",
+      "id": "9fb348bc-41a0-91ad-8a3e-818035c4e561"
+    },
+    "last_update": "5 minutes ago",
+    "last_update_raw": 1711620000
+  }
+}
