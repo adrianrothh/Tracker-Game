@@ -43,6 +43,11 @@ function Player() {
     return acc + (me ? me.damage_made : 0)
   }, 0)
 
+  const totalDamageReceived = matches.reduce((acc, match) => {
+    const me = match.players.all_players.find(p => p.puuid === myPuuid)
+    return acc + (me ? me.damage_received : 0)
+  }, 0)
+
   const totalRounds = matches.reduce((acc, match) => {
     return acc + match.metadata.rounds_played
   }, 0)
@@ -52,6 +57,18 @@ function Player() {
     const myTeam = me.team.toLowerCase()
     return match.teams[myTeam].has_won
   }).length
+  
+  
+  const totalScore = matches.reduce((acc, match) => {
+  const me = match.players.all_players.find(p => p.puuid === myPuuid)
+  return acc + me.stats.score
+  }, 0)
+
+  
+
+  const ACS = totalRounds > 0 ? Math.round(totalScore / totalRounds) : 0
+  const KAD = ((totalKills + totalAssists) / totalDeaths).toFixed(2)
+  const DDdelta = ((totalDamage - totalDamageReceived) / totalRounds).toFixed(2)
 
   const losses = matches.length - wins
 
@@ -61,6 +78,8 @@ function Player() {
   const hsPercent = totalShots > 0 ? Math.round((totalHeadshots / totalShots) * 100) : 0
   const damagePerRound = totalRounds > 0 ? Math.round(totalDamage / totalRounds) : 0
   const killsPerRound = totalRounds > 0 ? (totalKills / totalRounds).toFixed(2) : 0
+
+  
 
   return (
     <div>
@@ -81,10 +100,10 @@ function Player() {
       <p>Kills/Round: {killsPerRound}</p>
       <p>Headshot%: {hsPercent}%</p>
       <p>Dano/Round: {damagePerRound}</p>
-      <p>ACS: —</p>
-      <p>KAST: —</p>
-      <p>KAD Ratio: —</p>
-      <p>DD Delta/Round: —</p>
+      <p>ACS: {ACS}</p>
+      <p>KAST: -</p>
+      <p>KAD Ratio: {KAD}</p>
+      <p>DDΔ/Round: {DDdelta}</p>
       <p>First Bloods: —</p>
       <p>Flawless Rounds: —</p>
       <p>Aces: —</p>
