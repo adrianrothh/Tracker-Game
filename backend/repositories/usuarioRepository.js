@@ -22,4 +22,8 @@ async function findById(id) {
   return rows[0];
 }
 
-module.exports = { findByEmail, create, findById };
+async function deleteById(id) {
+  await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
+}
+
+module.exports = { findByEmail, create, findById, deleteById };
