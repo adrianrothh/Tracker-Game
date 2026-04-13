@@ -17,7 +17,7 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 
 ---
 ## Documentação
-Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
+Docs: https://docs.google.com/document/d/10zyYRMdJ-1-PjafNZCO0_HPoKCHyt4fspAqVL9izmyI/edit?usp=sharing
 
 
 
