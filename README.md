@@ -16,7 +16,7 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 | Dados        | Henrik-3 Valorant API               | API externa                      |
 
 ---
-## Documentação
+# Documentação
 Docs: https://docs.google.com/document/d/10zyYRMdJ-1-PjafNZCO0_HPoKCHyt4fspAqVL9izmyI/edit?usp=sharing
 
 
@@ -115,12 +115,12 @@ RNF18 – O sistema deve garantir integridade referencial entre usuários, jogad
 RNF19 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
 
 ---
-## Diagramas
+# Diagramas
 
-# Diagrama DER
+## Diagrama DER
 ![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
 
-# Diagrama C4
+## Diagrama C4
 ![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/ModeloC4.png)
 
 ---
