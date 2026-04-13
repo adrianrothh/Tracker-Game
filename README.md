@@ -116,21 +116,6 @@ RNF19 – O sistema deve evitar requisições desnecessárias à API externa par
 
 ---
 
-## Arquitetura
-
-Arquitetura monolítica com separação em camadas (MVC):
-routes → controllers → services → repositories → database
-
-```
-React + Vite
-        ↕ REST / JSON
-Node.js + Express
-     ↙                     ↘
- MySQL (XAMPP local)      Henrik Valorant API
-```
-
----
-
 ## Equipe
 
 | Nome       | Responsabilidade                           |
