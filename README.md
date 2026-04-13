@@ -16,8 +16,8 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 | Dados        | Henrik-3 Valorant API               | API externa                      |
 
 ---
-## Documentação
-Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
+# Documentação
+Docs: https://docs.google.com/document/d/10zyYRMdJ-1-PjafNZCO0_HPoKCHyt4fspAqVL9izmyI/edit?usp=sharing
 
 
 
@@ -115,22 +115,15 @@ RNF18 – O sistema deve garantir integridade referencial entre usuários, jogad
 RNF19 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
 
 ---
+# Diagramas
 
-## Arquitetura
+## Diagrama DER
+![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
 
-Arquitetura monolítica com separação em camadas (MVC):
-routes → controllers → services → repositories → database
-
-```
-React + Vite
-        ↕ REST / JSON
-Node.js + Express
-     ↙                     ↘
- MySQL (XAMPP local)      Henrik Valorant API
-```
+## Diagrama C4
+![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/ModeloC4.png)
 
 ---
-
 ## Equipe
 
 | Nome       | Responsabilidade                           |
