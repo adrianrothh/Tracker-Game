@@ -115,7 +115,15 @@ RNF18 – O sistema deve garantir integridade referencial entre usuários, jogad
 RNF19 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
 
 ---
+## Diagramas
 
+# Diagrama DER
+![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
+
+# Diagrama C4
+![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
+
+---
 ## Equipe
 
 | Nome       | Responsabilidade                           |
