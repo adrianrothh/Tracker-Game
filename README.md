@@ -15,6 +15,11 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 | Banco        | MySQL (XAMPP local)                 | BD relacional                    |
 | Dados        | Henrik-3 Valorant API               | API externa                      |
 
+---
+## Documentação
+Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
+
+
 
 ---
 # RF
@@ -123,12 +128,6 @@ Node.js + Express
      ↙                     ↘
  MySQL (XAMPP local)      Henrik Valorant API
 ```
-
----
-
-## Documentação
-Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
-
 
 ---
 
