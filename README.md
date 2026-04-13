@@ -6,7 +6,7 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 
 ---
 
-# Stack MVP
+# Stack Atual (MVP)
 
 | Camada       | Tecnologia                          | Justificativas                   |
 |--------------|-------------------------------------|----------------------------------|
@@ -15,21 +15,6 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 | Banco        | MySQL (XAMPP local)                 | BD relacional                    |
 | Dados        | Henrik-3 Valorant API               | API externa                      |
 
-
-# Stack COMPLETA - Não é definitiva
-
-| Camada       | Tecnologia                          |
-|--------------|-------------------------------------|
-| Frontend     | React + Vite + React Router         |
-| Backend      | Node.js + Express                   |
-| Banco        | MySQL (Railway)                     |
-| ORM          | Prisma                              |
-| Auth         | JWT (jsonwebtoken + bcryptjs)       |
-| Deploy       | Railway (backend) + Vercel (front)  |
-| CI/CD        | GitHub Actions                      |
-| Dados        | Henrik-3 Valorant API               |
-| Testes       | Jest                                |
-| Observab.    | Sentry                              |
 
 ---
 # RF
@@ -141,12 +126,15 @@ Node.js + Express
 
 ---
 
+## Documentação
+Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
+
+
+---
+
 ## Equipe
 
 | Nome       | Responsabilidade                           |
 |------------|--------------------------------------------|
 | Adrian     | Backend, Banco, CRUD, Integração API       |
 | Gustavo    | Frontend, React, Integração com Backend    |
-
-
-Docs: https://docs.google.com/document/d/1-yCVvP6SBHHICZifo500qebVi1UDs7VO67UM2AOzxxQ/edit?usp=sharing
