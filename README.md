@@ -121,7 +121,7 @@ RNF19 – O sistema deve evitar requisições desnecessárias à API externa par
 ![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
 
 # Diagrama C4
-![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/Diagrama%20DER.png)
+![image](https://github.com/adrianrothh/Tracker-Game/blob/main/Docs/ModeloC4.png)
 
 ---
 ## Equipe
