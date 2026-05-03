@@ -16,7 +16,7 @@ function Player() {
     async function buscar() {
       try {
         const res = await axios.get(`http://localhost:3000/api/player/na/${nome}/${tag}`)
-        setPlayerData(res.data)
+        setPlayerData(res.data.data)
       } catch (err) {
         setErro("Jogador não encontrado")
       } finally {
@@ -26,17 +26,21 @@ function Player() {
     buscar()
   }, [nome, tag])
 
-  if (loading) return <div className="text-white p-8">Carregando...</div>
+  console.log("playerData:", playerData)
+
+  if (loading) return <div className="text-black p-8">Carregando...</div>
   if (erro) return <div className="text-red-400 p-8">{erro}</div>
-  
+  if (!playerData) return <div className="text-black p-8">Carregando...</div>
+  console.log("matches:", playerData.matches)
+  console.log("primeira partida players:", playerData.matches[0]?.players)
   //!!!!!!!!!!!!!!!!!!
   //CALCULOS E FUNCOES
   //!!!!!!!!!!!!!!!!!!
 
-  const account = playerData.data.account
-  const mmr = playerData.data.mmr
-  const matches = playerData.data.matches
-  const myPuuid = playerData.data.account.puuid
+  const account = playerData.account
+  const mmr = playerData.mmr
+  const matches = playerData.matches
+  const myPuuid = account.puuid
 
   const totalKills = matches.reduce((acc, match) => {
     const me = match.players.all_players.find(p => p.puuid === myPuuid)
@@ -83,10 +87,13 @@ function Player() {
   }, 0)
 
   const wins = matches.filter(match => {
-    const me = match.players.all_players.find(p => p.puuid === myPuuid)
-    const myTeam = me.team.toLowerCase()
-    return match.teams[myTeam].has_won
-  }).length
+  const me = match.players.all_players.find(p => p.puuid === myPuuid)
+  const myTeam = me.team
+  const myTeamData = match.teams.find ? 
+    match.teams.find(t => t.team_id === myTeam) : 
+    match.teams[myTeam.toLowerCase()]
+  return myTeamData?.has_won
+}).length
   
   
   const totalScore = matches.reduce((acc, match) => {
@@ -200,8 +207,11 @@ function Player() {
       <h2>Histórico de Partidas</h2>
       {matches.map(match => {
         const me = match.players.all_players.find(p => p.puuid === myPuuid)
-        const myTeam = me.team.toLowerCase()
-        const venceu = match.teams[myTeam].has_won
+        const myTeam = me.team
+        const myTeamData = match.teams.find ?
+          match.teams.find(t => t.team_id === myTeam) :
+          match.teams[myTeam.toLowerCase()]
+        const venceu = myTeamData?.has_won
 
         return (
           <div key={match.metadata.matchid}>
