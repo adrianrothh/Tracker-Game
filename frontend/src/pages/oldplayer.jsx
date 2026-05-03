@@ -1,42 +1,12 @@
 // CAMINHO PRO MOCK
 //import playerData from '../mocks/player.json'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import axios from 'axios'
 
 function Player() {
-
-  const { nome, tag } = useParams()
-  const [playerData, setPlayerData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [erro, setErro] = useState(null)
-
-  useEffect(() => {
-    async function buscar() {
-      try {
-        const res = await axios.get(`http://localhost:3000/api/player/na/${nome}/${tag}`)
-        setPlayerData(res.data)
-      } catch (err) {
-        setErro("Jogador não encontrado")
-      } finally {
-        setLoading(false)
-      }
-    }
-    buscar()
-  }, [nome, tag])
-
-  if (loading) return <div className="text-white p-8">Carregando...</div>
-  if (erro) return <div className="text-red-400 p-8">{erro}</div>
-  
-  //!!!!!!!!!!!!!!!!!!
-  //CALCULOS E FUNCOES
-  //!!!!!!!!!!!!!!!!!!
-
   const account = playerData.data.account
   const mmr = playerData.data.mmr
   const matches = playerData.data.matches
-  const myPuuid = playerData.data.account.puuid
+  const myPuuid = "3c977bd2-1f15-5a51-a3ca-0c2c87193d6b"
 
   const totalKills = matches.reduce((acc, match) => {
     const me = match.players.all_players.find(p => p.puuid === myPuuid)
