@@ -15,7 +15,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
 
   if (!precisaAtualizar) {
     const partidas = await partidaRepository.findByJogadorId(jogador.id);
-    return { fonte: 'banco', jogador, partidas };
+    return { fonte: 'banco', jogador, partidas, stats: calcularEstatisticas(partidas) };
   }
 
   const [accountRes, mmrRes, matchesRes] = await Promise.all([
@@ -42,14 +42,14 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
 
   const puuid = account.data.puuid;
 
-  // RF15 — busca estatísticas gerais da season pelo puuid
+  // busca estatísticas gerais da season pelo puuid
   const statsRes = await fetch(
     `${BASE_URL}/v1/by-puuid/lifetime/matches/${region}/${puuid}?mode=competitive&size=20`,
     { headers }
   );
   const stats = statsRes.ok ? await statsRes.json() : { data: [] };
 
-  // RF21 — salva ou atualiza jogador no banco
+  // salva ou atualiza jogador no banco
   if (!jogador) {
     const id = await jogadorRepository.create(name, tag, puuid);
     jogador = { id, riot_name: name, riot_tag: tag, puuid };
@@ -57,7 +57,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
     await jogadorRepository.update(jogador.id, mmr.data?.current_data?.currenttierpatched);
   }
 
-  // RF24 e RF25 — salva partidas no banco sem duplicar
+  // salva partidas no banco sem duplicar
   if (matches.data && matches.data.length > 0) {
     for (const match of matches.data) {
       const jogadorDaPartida = match.players?.all_players?.find(p => p.puuid === puuid);
@@ -100,10 +100,10 @@ function calcularEstatisticas(partidas) {
   if (!partidas || partidas.length === 0) return null;
 
   const total = partidas.length;
-  const vitorias = partidas.filter(p => p.teams?.red?.has_won).length;
-  const kills = partidas.reduce((acc, p) => acc + (p.stats?.kills || 0), 0);
-  const deaths = partidas.reduce((acc, p) => acc + (p.stats?.deaths || 0), 0);
-  const assists = partidas.reduce((acc, p) => acc + (p.stats?.assists || 0), 0);
+  const vitorias = partidas.filter(p => p.resultado === 'Vitória').length;
+  const kills = partidas.reduce((acc, p) => acc + (p.kills || 0), 0);
+  const deaths = partidas.reduce((acc, p) => acc + (p.deaths || 0), 0);
+  const assists = partidas.reduce((acc, p) => acc + (p.assists || 0), 0);
 
   return {
     total_partidas: total,
