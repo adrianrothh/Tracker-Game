@@ -25,7 +25,7 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token)
-      navigate("/buscar")
+      navigate("/home")
 
     } catch (err) {
       setMsg("Erro ao conectar com o servidor")
