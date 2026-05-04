@@ -58,10 +58,11 @@ CREATE TABLE `jogadores` (
   `puuid` varchar(120) DEFAULT NULL,
   `atualizado_em` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `criado_em` datetime DEFAULT current_timestamp(),
+  `rank` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_player` (`riot_name`,`riot_tag`),
   UNIQUE KEY `puuid` (`puuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,6 +71,7 @@ CREATE TABLE `jogadores` (
 
 LOCK TABLES `jogadores` WRITE;
 /*!40000 ALTER TABLE `jogadores` DISABLE KEYS */;
+INSERT INTO `jogadores` VALUES (1,'kenJI','eeeh','884cc8f6-e692-58b9-81a9-d7ee7594feaa','2026-05-04 11:29:15','2026-05-04 11:29:15',NULL);
 /*!40000 ALTER TABLE `jogadores` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -98,7 +100,7 @@ CREATE TABLE `partidas` (
   UNIQUE KEY `match_id` (`match_id`),
   KEY `jogador_id` (`jogador_id`),
   CONSTRAINT `partidas_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -107,6 +109,7 @@ CREATE TABLE `partidas` (
 
 LOCK TABLES `partidas` WRITE;
 /*!40000 ALTER TABLE `partidas` DISABLE KEYS */;
+INSERT INTO `partidas` VALUES (1,1,'a8c95dbf-afea-474c-b1f3-676f96a408e1','Ascent','Competitive','Chamber',17,16,5,1.06,'Derrota','2026-05-02 18:15:53','2026-05-04 11:29:15'),(2,1,'bd686c2e-3a49-4777-98e0-0988fa9fef57','Fracture','Competitive','Deadlock',5,20,8,0.25,'Derrota','2026-05-02 17:29:49','2026-05-04 11:29:15'),(3,1,'4273f604-4225-4de9-9fa8-c4abae1709f0','Breeze','Competitive','Gekko',6,18,3,0.33,'Derrota','2026-05-02 16:45:58','2026-05-04 11:29:15'),(4,1,'6141b7a6-5170-4c66-9445-44ad2562ea7f','Split','Competitive','Omen',12,18,11,0.67,'Vitória','2026-05-01 22:51:16','2026-05-04 11:29:15'),(5,1,'88950f63-5f6a-4705-a51b-05bc18eec473','Split','Competitive','Omen',13,14,6,0.93,'Derrota','2026-05-01 22:17:26','2026-05-04 11:29:15'),(6,1,'53dc85c2-1a2c-4e7f-871c-314d8edc13cb','Lotus','Competitive','Chamber',12,12,3,1.00,'Vitória','2026-04-30 18:43:00','2026-05-04 11:29:15'),(7,1,'38270f24-7e0d-4f74-950b-00e0b74e11e0','Breeze','Competitive','Omen',11,16,5,0.69,'Derrota','2026-04-30 17:50:51','2026-05-04 11:29:15'),(8,1,'17b8f954-0bf5-4dad-9cad-f762e480a51d','Fracture','Competitive','KAY/O',24,20,8,1.20,'Vitória','2026-04-30 16:42:09','2026-05-04 11:29:15'),(9,1,'b448ed0b-97a0-474f-be42-f06f6981eefb','Haven','Competitive','Sova',7,17,8,0.41,'Derrota','2026-04-29 22:11:23','2026-05-04 11:29:15'),(10,1,'42eb6561-2325-414b-b368-765f15790236','Ascent','Competitive','Fade',12,5,8,2.40,'Vitória','2026-04-29 21:41:10','2026-05-04 11:29:15');
 /*!40000 ALTER TABLE `partidas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,4 +177,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-15 21:26:37
+-- Dump completed on 2026-05-04 11:31:14
