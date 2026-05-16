@@ -32,7 +32,7 @@ function Player() {
   const partidas = playerData.partidas || []
 
   return (
-    <div>
+    <div class="pl-20 py-10">
       <h1>{jogador.riot_name}#{jogador.riot_tag}</h1>
       <p>Rank: {jogador.rank}</p>
 
