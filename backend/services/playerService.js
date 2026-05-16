@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const jogadorRepository = require('../repositories/jogadorRepository');
 const partidaRepository = require('../repositories/partidaRepository');
-
+const rankSnapshotRepository = require('../repositories/rankSnapshotRepository');
 const BASE_URL = 'https://api.henrikdev.xyz/valorant';
 const API_KEY = process.env.HENRIK_API_KEY;
 const headers = { 'Authorization': API_KEY };
@@ -47,12 +47,17 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
   const allMatches = allMatchesRes.ok ? await allMatchesRes.json() : { data: [] };
   const puuid = account.data.puuid;
 
-  if (!jogador) {
-    const id = await jogadorRepository.create(name, tag, puuid);
-    jogador = { id, riot_name: name, riot_tag: tag, puuid };
-  } else {
-    await jogadorRepository.update(jogador.id, mmr.data?.current_data?.currenttierpatched);
-  }
+if (!jogador) {
+  const id = await jogadorRepository.create(name, tag, puuid);
+  jogador = { id, riot_name: name, riot_tag: tag, puuid };
+} else {
+  await jogadorRepository.update(jogador.id, mmr.data?.current_data?.currenttierpatched);
+  await rankSnapshotRepository.save(  // ← adiciona isso
+    jogador.id,
+    mmr.data?.current_data?.currenttierpatched || null,
+    mmr.data?.current_data?.ranking_in_tier || null
+  );
+}
 
   if (allMatches.data && allMatches.data.length > 0) {
     for (const match of allMatches.data) {
@@ -64,6 +69,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       const totalShots = headshots + bodyshots + legshots;
       const damage_made = jogadorDaPartida?.damage_made || 0;
       const score = jogadorDaPartida?.stats?.score || 0;
+      const { firstBloods, aces } = calcularFirstBloodsEAces(match, puuid);
 
       await partidaRepository.upsert({
         jogador_id: jogador.id,
@@ -81,7 +87,9 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         data_partida: new Date(match.metadata.game_start * 1000),
         headshot_percent: totalShots > 0 ? ((headshots / totalShots) * 100).toFixed(2) : 0,
         acs: (score / rounds_played).toFixed(2),
-        dano_por_round: (damage_made / rounds_played).toFixed(2)
+        dano_por_round: (damage_made / rounds_played).toFixed(2),
+        first_bloods: firstBloods,
+        aces: aces
       });
     }
   }
@@ -121,6 +129,8 @@ function calcularEstatisticas(partidas) {
   const acs = partidas.reduce((acc, p) => acc + parseFloat(p.acs || 0), 0);
   const dano = partidas.reduce((acc, p) => acc + parseFloat(p.dano_por_round || 0), 0);
   const hs = partidas.reduce((acc, p) => acc + parseFloat(p.headshot_percent || 0), 0);
+  const firstBloods = partidas.reduce((acc, p) => acc + (p.first_bloods || 0), 0);
+  const aces = partidas.reduce((acc, p) => acc + (p.aces || 0), 0);
 
   return {
     total_partidas: total,
@@ -133,8 +143,40 @@ function calcularEstatisticas(partidas) {
     assists_totais: assists,
     acs_medio: (acs / total).toFixed(2),
     dano_por_round_medio: (dano / total).toFixed(2),
-    headshot_percent_medio: (hs / total).toFixed(2) + '%'
+    headshot_percent_medio: (hs / total).toFixed(2) + '%',
+    first_bloods_totais: firstBloods,
+    aces_totais: aces
   };
+}
+
+function calcularFirstBloodsEAces(match, puuid) {
+  const kills = match.kills || [];
+  let firstBloods = 0;
+  let aces = 0;
+
+  // Agrupa kills por round
+  const killsPorRound = {};
+  for (const kill of kills) {
+    const round = kill.round;
+    if (!killsPorRound[round]) killsPorRound[round] = [];
+    killsPorRound[round].push(kill);
+  }
+
+  for (const round in killsPorRound) {
+    const killsDoRound = killsPorRound[round];
+
+    // First Blood — primeiro kill do round
+    const primeiroKill = killsDoRound.reduce((min, k) =>
+      k.kill_time_in_round < min.kill_time_in_round ? k : min
+    );
+    if (primeiroKill.killer_puuid === puuid) firstBloods++;
+
+    // Aces — 5 kills no mesmo round pelo mesmo jogador
+    const killsDoJogador = killsDoRound.filter(k => k.killer_puuid === puuid);
+    if (killsDoJogador.length >= 5) aces++;
+  }
+
+  return { firstBloods, aces };
 }
 
 module.exports = { getPlayerData };

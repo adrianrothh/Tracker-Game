@@ -3,8 +3,8 @@ const pool = require('../config/db');
 async function upsert(partida) {
   await pool.query(
     `INSERT INTO partidas 
-      (jogador_id, match_id, mapa, modo, agente, kills, deaths, assists, kdr, resultado, data_partida, headshot_percent, acs, dano_por_round)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (jogador_id, match_id, mapa, modo, agente, kills, deaths, assists, kdr, resultado, data_partida, headshot_percent, acs, dano_por_round, first_bloods, aces)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
       mapa = VALUES(mapa),
       modo = VALUES(modo),
@@ -16,7 +16,9 @@ async function upsert(partida) {
       resultado = VALUES(resultado),
       headshot_percent = VALUES(headshot_percent),
       acs = VALUES(acs),
-      dano_por_round = VALUES(dano_por_round)`,
+      dano_por_round = VALUES(dano_por_round),
+      first_bloods = VALUES(first_bloods),
+      aces = VALUES(aces)`,
     [
       partida.jogador_id,
       partida.match_id,
@@ -31,7 +33,9 @@ async function upsert(partida) {
       partida.data_partida,
       partida.headshot_percent,
       partida.acs,
-      partida.dano_por_round
+      partida.dano_por_round,
+      partida.first_bloods,
+      partida.aces
     ]
   );
 }

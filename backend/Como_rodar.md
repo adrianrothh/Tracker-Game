@@ -1,6 +1,6 @@
 ### Configurar o Banco de Dados:
 
-Clique em Shell e use: 
+Entre no xamp inicie o mysql e abra o cmd:
 `mysql -u root`
 Dentro do MySQL, crie o banco:
 
