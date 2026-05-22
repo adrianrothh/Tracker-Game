@@ -1,35 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import axios from "axios"
 
 export default function Home() {
   const [nome, setNome] = useState("")
   const [tag, setTag] = useState("")
   const [msg, setMsg] = useState("")
-  const [favoritos, setFavoritos] = useState([])
-  const [showDropdown, setShowDropdown] = useState(false)
-
   const navigate = useNavigate()
-
-  useEffect(() => {
-    async function fetchFavoritos() {
-      const token = localStorage.getItem("token") // Pega o token salvo no login
-      if (!token) return // Se não estiver logado, não faz nada
-
-      try {
-        const res = await axios.get("http://localhost:3000/api/favorites", {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        
-        console.log("Minha lista de favoritos:", res.data) // <--- ADICIONE ESTA LINHA
-        
-        setFavoritos(res.data.data || [])
-      } catch (err) {
-        console.error("Erro ao buscar favoritos", err)
-      }
-    }
-    fetchFavoritos()
-  }, [])
 
   function handleBuscar(e) {
     e.preventDefault()
@@ -50,7 +26,7 @@ export default function Home() {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           backgroundRepeat: 'repeat',
           backgroundSize: '60px 60px'
-        }}
+        }} 
       />
 
       {/* CONTEÚDO */}
@@ -69,56 +45,26 @@ export default function Home() {
             histórico de partidas e evolução completa.
           </p>
 
-          {/* SEARCH COM DROPDOWN DE FAVORITOS */}
-          <div className="relative w-full max-w-xl">
-            <form 
-              onSubmit={handleBuscar} 
-              className="flex flex-col sm:flex-row gap-3 w-full"
-              // Abre o menu ao focar no form
-              onFocus={() => setShowDropdown(true)} 
-              // Fecha o menu com um pequeno atraso para dar tempo do clique registrar
-              onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-            >
-              <input
-                type="text"
-                placeholder="Nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
-              />
-              <input
-                type="text"
-                placeholder="Tag"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-                className="w-28 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
-              />
-              <button className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-lg font-semibold transition-colors">
-                Buscar
-              </button>
-            </form>
-
-            {/* O MENU DROPDOWN */}
-            {showDropdown && favoritos.length > 0 && (
-              <div className="absolute top-full left-0 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-                <div className="p-2 text-left text-sm text-gray-400 font-semibold border-b border-gray-700">
-                  Meus Favoritos
-                </div>
-                {favoritos.map((fav) => (
-                  <div 
-                    key={fav.id}
-                    // onMouseDown garante que o clique registre antes do input perder o foco
-                    onMouseDown={() => navigate(`/player/${fav.riot_name}/${fav.riot_tag}`)}
-                    className="p-3 hover:bg-gray-700 cursor-pointer text-left transition-colors flex justify-between items-center"
-                  >
-                    <span>{fav.riot_name}#{fav.riot_tag}</span>
-                    <span className="text-xs text-gray-500">Ir para perfil ➔</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* FIM DO SEARCH COM DROPDOWN */}
+          {/* SEARCH */}
+          <form onSubmit={handleBuscar} className="flex flex-col sm:flex-row gap-3 w-full max-w-xl">
+            <input
+              type="text"
+              placeholder="Nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
+            />
+            <input
+              type="text"
+              placeholder="Tag"
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              className="w-28 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
+            />
+            <button className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-lg font-semibold transition-colors">
+              Buscar
+            </button>
+          </form>
 
           {msg && <p className="text-red-400 mt-3 text-sm font-medium">{msg}</p>}
 

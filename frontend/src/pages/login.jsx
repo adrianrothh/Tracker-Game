@@ -19,12 +19,17 @@ export default function Login() {
 
       const data = await res.json()
 
+      console.log("Resposta do Login:", data);
+
       if (!res.ok) {
         setMsg(data.message || "Erro ao fazer login")
         return
       }
 
-      localStorage.setItem("token", data.token)
+      // 1. Caminho corrigido para puxar o token do lugar certo:
+      localStorage.setItem("token", data.data.token) 
+      
+      // 2. Redirecionamento reativado (sem as barras //):
       navigate("/home")
 
     } catch (err) {
