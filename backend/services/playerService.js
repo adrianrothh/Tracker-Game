@@ -59,7 +59,7 @@ if (!jogador) {
   );
 }
 
-  if (allMatches.data && allMatches.data.length > 0) {
+if (allMatches.data && allMatches.data.length > 0) {
     for (const match of allMatches.data) {
       const jogadorDaPartida = match.players?.all_players?.find(p => p.puuid === puuid);
       const rounds_played = match.metadata?.rounds_played || 1;
@@ -70,6 +70,10 @@ if (!jogador) {
       const damage_made = jogadorDaPartida?.damage_made || 0;
       const score = jogadorDaPartida?.stats?.score || 0;
       const { firstBloods, aces } = calcularFirstBloodsEAces(match, puuid);
+      const timeDoJogador = jogadorDaPartida?.team?.toLowerCase();
+      const redGanhou = match.teams?.red?.has_won === true;
+      const jogadorGanhou = (timeDoJogador === 'red' && redGanhou) ||
+                            (timeDoJogador === 'blue' && !redGanhou);
 
       await partidaRepository.upsert({
         jogador_id: jogador.id,
@@ -83,7 +87,7 @@ if (!jogador) {
         kdr: jogadorDaPartida?.stats?.deaths > 0
           ? (jogadorDaPartida.stats.kills / jogadorDaPartida.stats.deaths).toFixed(2)
           : jogadorDaPartida?.stats?.kills || 0,
-        resultado: match.teams?.red?.has_won === true ? 'Vitória' : 'Derrota',
+        resultado: jogadorGanhou ? 'Vitória' : 'Derrota',
         data_partida: new Date(match.metadata.game_start * 1000),
         headshot_percent: totalShots > 0 ? ((headshots / totalShots) * 100).toFixed(2) : 0,
         acs: (score / rounds_played).toFixed(2),
