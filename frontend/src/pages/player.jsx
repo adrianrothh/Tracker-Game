@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
+import StatCard from '../components/statcard'
+import MatchCard from '../components/matchcard'
+import PlayerHeader from '../components/playerheader'
+
 
 function Player() {
   const {nome, tag} = useParams()
@@ -9,6 +13,7 @@ function Player() {
   const [erro, setErro] = useState(null)
   const [isFavorito, setIsFavorito] = useState(false)
   const [favId, setFavId] = useState(null)
+  const [agentImages, setAgentImages] = useState({})
 
   useEffect(() => {
     async function buscar() {
@@ -24,26 +29,22 @@ function Player() {
     buscar()
   }, [nome, tag])
 
-  // FAVORITO FAVORITO FAVORITO
   useEffect(() => {
     async function checarFavorito() {
       const token = localStorage.getItem("token")
-      if (!token) return // Se não estiver logado, nem checa
+      if (!token) return
 
       try {
         const res = await axios.get("http://localhost:3000/api/favorites", {
           headers: { Authorization: `Bearer ${token}` }
         })
         const listaFavoritos = res.data.data || []
-        
-        // Procura na lista do banco se o jogador atual está lá
         const favoritoEncontrado = listaFavoritos.find(
           (fav) => fav.riot_name.toLowerCase() === nome.toLowerCase() && fav.riot_tag.toLowerCase() === tag.toLowerCase()
         )
-
         if (favoritoEncontrado) {
           setIsFavorito(true)
-          setFavId(favoritoEncontrado.id) // Salva o ID do banco para poder deletar depois
+          setFavId(favoritoEncontrado.id)
         }
       } catch (err) {
         console.error("Erro ao checar favoritos", err)
@@ -52,7 +53,22 @@ function Player() {
     checarFavorito()
   }, [nome, tag])
 
-  // --- NOVA FUNÇÃO: FAVORITAR / DESFAVORITAR ---
+  useEffect(() => {
+    async function buscarAgentes() {
+      try {
+        const res = await axios.get('https://valorant-api.com/v1/agents?isPlayableCharacter=true')
+        const mapa = {}
+        res.data.data.forEach(agente => {
+          mapa[agente.displayName] = agente.displayIcon
+        })
+        setAgentImages(mapa)
+      } catch (err) {
+        console.error("Erro ao buscar imagens dos agentes", err)
+      }
+    }
+    buscarAgentes()
+  }, [])
+
   async function handleToggleFavorito() {
     const token = localStorage.getItem("token")
     if (!token) {
@@ -62,88 +78,68 @@ function Player() {
 
     try {
       if (isFavorito) {
-        // Se já é favorito, envia o DELETE
         await axios.delete(`http://localhost:3000/api/favorites/${favId}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setIsFavorito(false)
         setFavId(null)
       } else {
-        // Se não é favorito, envia o POST
-        await axios.post("http://localhost:3000/api/favorites", 
-          { riot_name: nome, riot_tag: tag }, 
+        await axios.post("http://localhost:3000/api/favorites",
+          { riot_name: nome, riot_tag: tag },
           { headers: { Authorization: `Bearer ${token}` } }
         )
-        // Recarrega a página para o useEffect rodar novamente e pegar o ID gerado no banco
-        window.location.reload() 
+        window.location.reload()
       }
     } catch (err) {
       console.error("Erro ao favoritar", err)
     }
   }
 
-  if (loading) return <div className="p-8">Carregando...</div>
-  if (erro) return <div className="text-red-400 p-8">{erro}</div>
-  if (!playerData) return <div className="p-8">Carregando...</div>
-  
+  if (loading) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Carregando...</div>
+  if (erro) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-red-400">{erro}</div>
+  if (!playerData) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Carregando...</div>
+  if (!playerData.jogador) return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-white">Carregando...</div>
+
   const jogador = playerData.jogador
   const stats = playerData.stats
   const partidas = playerData.partidas || []
 
-  // ==========================================
-  // INÍCIO DO TESTE DE DEBUG FRONT X BACK
-  // ==========================================
-  console.log("==========================================");
-  console.log("🕵️ TESTE FRONTEND VS BACKEND: RESULTADOS");
-  console.log("==========================================");
-  partidas.forEach((partida, index) => {
-    console.log(`Partida ${index + 1} | Mapa: ${partida.mapa} | KDA: ${partida.kills}/${partida.deaths}/${partida.assists} | 🚨 O BACKEND ENVIOU: "${partida.resultado}"`);
-  });
-  console.log("==========================================");
-  // ==========================================
-
   return (
-    <div className="pl-20 py-10">
-      {/* --- NOVO CABEÇALHO DO JOGADOR COM O BOTÃO DE FAVORITO --- */}
-      <div className="flex items-center gap-6 mb-4">
-        <h1 className="text-3xl font-bold">{jogador.riot_name}#{jogador.riot_tag}</h1>
-        
-        <button 
-          onClick={handleToggleFavorito}
-          className={`px-4 py-2 rounded-lg font-bold transition-colors ${
-            isFavorito 
-              ? 'bg-gray-700 hover:bg-gray-600 text-white border border-gray-500' 
-              : 'bg-yellow-500 hover:bg-yellow-400 text-black'
-          }`}
-        >
-          {isFavorito ? '★ Remover Favorito' : '☆ Favoritar'}
-        </button>
+  <div className="min-h-screen bg-gray-950 text-white">
+
+    <PlayerHeader
+      jogador={jogador}
+      isFavorito={isFavorito}
+      handleToggleFavorito={handleToggleFavorito}
+    />
+
+    <div className="max-w-5xl mx-auto px-8 py-6 flex flex-col gap-6">
+
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard titulo="Vitórias / Derrotas" valor={`${stats.vitorias}W — ${stats.derrotas}L`} subtitulo={`${stats.winrate} winrate`} />
+        <StatCard titulo="K/D Ratio" valor={stats.kdr_geral} cor="text-green-400" />
+        <StatCard titulo="KDA" valor={`${stats.kills_totais} / ${stats.deaths_totais} / ${stats.assists_totais}`} />
+        <StatCard titulo="ACS Médio" valor={stats.acs_medio} cor="text-yellow-400" />
+        <StatCard titulo="Dano/Round" valor={stats.dano_por_round_medio} cor="text-orange-400" />
+        <StatCard titulo="Headshot%" valor={stats.headshot_percent_medio} cor="text-blue-400" />
+        <StatCard titulo="First Bloods" valor={stats.first_bloods_totais} cor="text-red-400" />
+        <StatCard titulo="Aces" valor={stats.aces_totais} cor="text-purple-400" />
+        <StatCard titulo="Total Partidas" valor={stats.total_partidas} />
       </div>
-      
-      <p>Rank: {jogador.rank}</p>
 
-      <h2>Visão Geral</h2>
-      <p>Vitórias: {stats.vitorias}</p>
-      <p>Derrotas: {stats.derrotas}</p>
-      <p>Win%: {stats.winrate}</p>
-      <p>K/D Ratio: {stats.kdr_geral}</p>
-      <p>Kills: {stats.kills_totais}</p>
-      <p>Deaths: {stats.deaths_totais}</p>
-      <p>Assists: {stats.assists_totais}</p>
-      <p>First Bloods: {stats.first_bloods_totais ?? '—'}</p>
-      <p>Aces: {stats.aces_totais ?? '—'}</p>
-
-      <h2>Histórico de Partidas</h2>
-      {partidas.map((partida, index) => (
-        <div key={index}>
-          <p>
-            {partida.mapa} — {partida.agente} —
-            {partida.kills}/{partida.deaths}/{partida.assists} —
-            <strong>{partida.resultado}</strong>
-          </p>
+      <div className="bg-gray-900 border border-gray-800 rounded-xl">
+        <div className="px-6 py-4 border-b border-gray-800">
+          <h2 className="font-bold text-lg">Histórico de Partidas</h2>
         </div>
-      ))}
+        <div className="flex flex-col divide-y divide-gray-800">
+          {partidas.map((partida, index) => (
+            <MatchCard key={index} partida={partida} agentImages={agentImages} />
+          ))}
+        </div>
+      </div>
+
     </div>
+  </div>
   )
 }
 

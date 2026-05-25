@@ -59,7 +59,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
             Acompanhe suas{" "}
-            <span className="text-red-500">estatísticas</span>
+            <span className="text-red-500">Estatísticas</span>
             <br />
             de Valorant
           </h1>
