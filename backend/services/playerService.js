@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const pool = require('../config/db');
 const jogadorRepository = require('../repositories/jogadorRepository');
 const partidaRepository = require('../repositories/partidaRepository');
 const rankSnapshotRepository = require('../repositories/rankSnapshotRepository');
@@ -9,21 +10,25 @@ const headers = { 'Authorization': API_KEY };
 async function getPlayerData(region, name, tag, forceUpdate = false) {
 
   let jogador = await jogadorRepository.findByRiotId(name, tag);
-  const precisaAtualizar = !jogador || forceUpdate || dadosExpirados(jogador.atualizado_em);
+  const atualizadoRecentemente = jogador && (Date.now() - new Date(jogador.atualizado_em).getTime() < 2 * 60 * 1000);
+  const forcarDefinitivo = forceUpdate && !atualizadoRecentemente;
+  const precisaAtualizar = !jogador || forcarDefinitivo || dadosExpirados(jogador.atualizado_em);
 
   if (!precisaAtualizar) {
-  const partidas = await partidaRepository.findByJogadorId(jogador.id);
+    const partidas = await partidaRepository.findByJogadorId(jogador.id);
 
     if (partidas && partidas.length > 0) {
-      const ultimas50 = partidas.slice(0, 50);
+      // CORREÇÃO 1: Garante a ordenação decrescente por data no bloco do cache
+      const partidasOrdenadas = partidas.sort((a, b) => new Date(b.data_partida) - new Date(a.data_partida));
+      const ultimas10 = partidasOrdenadas.slice(0, 10);
 
       return {
         fonte: 'banco',
         jogador,
-        partidas: ultimas50,
-        stats: calcularEstatisticas(ultimas50)
+        partidas: ultimas10,
+        stats: calcularEstatisticas(ultimas10)
       };
-  }
+    }
 
     console.log('Jogador encontrado no banco, mas sem partidas. Buscando na API...');
   }
@@ -52,13 +57,11 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
   const puuid = account.data.puuid;
   const novasPartidas = matches.data || [];
 
-  //LOG TEMPORARIO
+  // LOGS TEMPORÁRIOS
   console.log('Status matches:', matchesRes.status);
   console.log('Partidas buscadas da API:', novasPartidas.length);
   console.log('Primeira partida:', novasPartidas[0]?.metadata?.matchid);
   console.log('Modo da primeira partida:', novasPartidas[0]?.metadata?.mode);
-
-  console.log('Partidas buscadas da API:', novasPartidas.length);
 
   if (!jogador) {
     const jogadorPorPuuid = await jogadorRepository.findByPuuid(puuid);
@@ -67,7 +70,9 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       await jogadorRepository.update(jogador.id, mmr.data?.current_data?.currenttierpatched);
     } else {
       const id = await jogadorRepository.create(name, tag, puuid);
-      jogador = { id, riot_name: name, riot_tag: tag, puuid };
+      const rankAtual = mmr.data?.current_data?.currenttierpatched || null;
+      await jogadorRepository.update(id, rankAtual);
+      jogador = { id, riot_name: name, riot_tag: tag, puuid, rank: rankAtual };
     }
   } else {
     await jogadorRepository.update(jogador.id, mmr.data?.current_data?.currenttierpatched);
@@ -147,7 +152,19 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
   console.log('ID do jogador:', jogador.id);
   console.log('Partidas encontradas no banco depois do upsert:', todasPartidas.length);
   
-  const ultimas50 = todasPartidas.slice(0, 50);
+  // CORREÇÃO 1: Garante a ordenação decrescente por data também no fluxo vindo da API
+  const todasPartidasOrdenadas = todasPartidas.sort((a, b) => new Date(b.data_partida) - new Date(a.data_partida));
+  const ultimas10 = todasPartidasOrdenadas.slice(0, 10);
+
+  // CORREÇÃO 2: Remove fisicamente do banco de dados qualquer partida antiga que passe do limite de 10
+  if (todasPartidasOrdenadas.length > 10) {
+    const partidasParaDeletar = todasPartidasOrdenadas.slice(10);
+    
+    for (const partidaAntiga of partidasParaDeletar) {
+      await pool.query('DELETE FROM partidas WHERE match_id = ? AND jogador_id = ?', [partigaAntiga.match_id, jogador.id]);
+    }
+    console.log(`Limpeza concluída: ${partidasParaDeletar.length} partidas antigas foram removidas do MySQL.`);
+  }
 
   return {
     fonte: 'api',
@@ -159,8 +176,8 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       rank: mmr.data?.current_data?.currenttierpatched || null,
       atualizado_em: new Date()
     },
-    partidas: ultimas50,
-    stats: calcularEstatisticas(ultimas50)
+    partidas: ultimas10,
+    stats: calcularEstatisticas(ultimas10)
   };
 }
 

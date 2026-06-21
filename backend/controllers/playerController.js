@@ -2,12 +2,13 @@ const playerService = require('../services/playerService');
 
 async function getPlayer(req, res) {
   const { region, name, tag } = req.params;
-
+  const forceUpdate = req.query.force === 'true';
+  
   try {
-    const data = await playerService.getPlayerData(region, name, tag);
+    const data = await playerService.getPlayerData(region, name, tag, forceUpdate);
     res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error('Erro completo:', err); // ← já tinha isso?
+    console.error('Erro completo:', err);
     res.status(err.status || 500).json({ success: false, message: err.message });
   }
 }
