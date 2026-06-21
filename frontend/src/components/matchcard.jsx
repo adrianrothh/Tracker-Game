@@ -1,8 +1,29 @@
 function MatchCard({ partida, agentImages }) {
-  const venceu = partida.resultado === 'Vitória'
+  const getResultadoStyle = (resultado) => {
+    if (resultado === 'Vitória') {
+      return {
+        border: 'border-green-500',
+        text: 'text-green-400'
+      }
+    }
+
+    if (resultado === 'Empate') {
+      return {
+        border: 'border-yellow-500',
+        text: 'text-yellow-400'
+      }
+    }
+
+    return {
+      border: 'border-red-500',
+      text: 'text-red-400'
+    }
+  }
+
+  const resultadoStyle = getResultadoStyle(partida.resultado)
 
   return (
-    <div className={`flex items-center gap-4 px-6 py-4 border-l-4 ${venceu ? 'border-green-500' : 'border-red-500'}`}>
+    <div className={`flex items-center gap-4 px-6 py-4 border-l-4 ${resultadoStyle.border}`}>
       {agentImages[partida.agente] ? (
         <img
           src={agentImages[partida.agente]}
@@ -46,7 +67,7 @@ function MatchCard({ partida, agentImages }) {
       </div>
 
       <div className="text-right min-w-16">
-        <span className={`font-bold text-sm ${venceu ? 'text-green-400' : 'text-red-400'}`}>
+        <span className={`font-bold text-sm ${resultadoStyle.text}`}>
           {partida.resultado}
         </span>
       </div>
