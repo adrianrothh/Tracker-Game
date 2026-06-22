@@ -41,4 +41,22 @@ async function getRankHistory(req, res) {
   }
 }
 
-module.exports = { getPlayer, updatePlayer, getRankHistory };
+async function getMatchDetails(req, res) {
+  try {
+    const { matchId } = req.params;
+    const data = await playerService.getMatchDetailsFromAPI(matchId);
+    
+    return res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    console.error("[Controller Erro Match]:", error);
+    return res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Erro ao buscar detalhes da partida."
+    });
+  }
+}
+
+module.exports = { getPlayer, updatePlayer, getRankHistory, getMatchDetails };

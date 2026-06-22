@@ -267,4 +267,85 @@ function calcularFirstBloodsEAces(match, puuid) {
   return { firstBloods, aces };
 }
 
-module.exports = { getPlayerData };
+async function getMatchDetailsFromAPI(matchId) {
+  try {
+    // Consulta a API de partidas detalhadas da Henrik
+    const response = await fetch(`https://api.henrikdev.xyz/valorant/v2/match/${matchId}`, { headers });
+
+    if (!response.ok) {
+      const err = new Error('Erro ao consultar detalhes da partida na API');
+      err.status = response.status;
+      throw err;
+    }
+
+    const matchData = await response.json();
+    const dataData = matchData.data;
+
+    if (!dataData) {
+      throw new Error('Dados da partida não encontrados.');
+    }
+
+    // Informações gerais do mapa e rounds
+    const metadata = dataData.metadata || {};
+    const teamsData = dataData.teams || {};
+
+    // Mapeia todos os jogadores da partida
+    const todosJogadores = dataData.players?.all_players || [];
+    
+    const playersFormatted = todosJogadores.map(p => {
+      const roundsPlayed = metadata.rounds_played || 1;
+      const headshots = p.stats?.headshots || 0;
+      const bodyshots = p.stats?.bodyshots || 0;
+      const legshots = p.stats?.legshots || 0;
+      const totalShots = headshots + bodyshots + legshots;
+
+      return {
+        riot_name: p.name,
+        riot_tag: p.tag,
+        puuid: p.puuid,
+        team: p.team?.toLowerCase(), // 'red' ou 'blue'
+        agente: p.character,
+        card_img: p.assets?.card?.small,
+        rank: p.currenttierpatched || "Unranked",
+        kills: p.stats?.kills || 0,
+        deaths: p.stats?.deaths || 0,
+        assists: p.stats?.assists || 0,
+        kdr: p.stats?.deaths > 0 ? (p.stats.kills / p.stats.deaths).toFixed(2) : p.stats?.kills || 0,
+        acs: (p.stats?.score / roundsPlayed).toFixed(2),
+        dano_por_round: (p.damage_made / roundsPlayed).toFixed(2),
+        headshot_percent: totalShots > 0 ? ((headshots / totalShots) * 100).toFixed(1) : 0,
+      };
+    });
+
+    // Separa os jogadores por time igualzinho na imagem
+    const timeRed = playersFormatted.filter(p => p.team === 'red');
+    const timeBlue = playersFormatted.filter(p => p.team === 'blue');
+
+    return {
+      partida_info: {
+        match_id: metadata.matchid,
+        mapa: metadata.map,
+        modo: metadata.mode,
+        data_jogo: new Date(metadata.game_start * 1000),
+        rounds_jogados: metadata.rounds_played,
+        placar: {
+          red: teamsData.red?.rounds_won || 0,
+          blue: teamsData.blue?.rounds_won || 0
+        }
+      },
+      times: {
+        team_red: timeRed,
+        team_blue: timeBlue
+      }
+    };
+
+  } catch (error) {
+    console.error(`[Match Service Erro]: Falha ao buscar partida ${matchId}.`, error.message);
+    throw {
+      status: error.status || 500,
+      message: error.message || "Não foi possível carregar os detalhes desta partida."
+    };
+  }
+}
+
+module.exports = { getPlayerData, getMatchDetailsFromAPI };
