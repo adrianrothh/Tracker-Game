@@ -70,6 +70,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
     const matches = await matchesRes.json();
     const puuid = account.data.puuid;
     const novasPartidas = matches.data || [];
+    const card = account.data?.card || null;
 
     // Logs temporários de controle
     console.log("Status matches:", matchesRes.status);
@@ -87,7 +88,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       } else {
         const id = await jogadorRepository.create(name, tag, puuid);
         const rankAtual = mmr.data?.current_data?.currenttierpatched || null;
-        await jogadorRepository.update(id, rankAtual);
+        await jogadorRepository.update(id, rankAtual, card);
         jogador = {
           id,
           riot_name: name,
@@ -100,6 +101,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       await jogadorRepository.update(
         jogador.id,
         mmr.data?.current_data?.currenttierpatched,
+        card,
       );
       await rankSnapshotRepository.save(
         jogador.id,
@@ -226,6 +228,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         riot_tag: tag,
         puuid: puuid,
         rank: mmr.data?.current_data?.currenttierpatched || null,
+        card,
         atualizado_em: new Date(),
       },
       partidas: ultimas10,

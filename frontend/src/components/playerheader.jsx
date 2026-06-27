@@ -1,5 +1,14 @@
 function PlayerHeader({ jogador, rankIcon, isFavorito, handleToggleFavorito }) {
-  const avatarUrl = jogador.card_url || jogador.avatar || jogador.card || null;
+  const avatarUrl =
+    jogador.avatar ||
+    jogador.card_url ||
+    jogador.card?.small ||
+    jogador.card?.large ||
+    jogador.card?.wide ||
+    null;
+
+  console.log("CARD NO HEADER:", jogador.card);
+  console.log("AVATAR URL:", avatarUrl);
 
   return (
     <header className="">

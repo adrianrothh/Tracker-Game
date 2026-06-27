@@ -53,6 +53,7 @@ function Player() {
       try {
         setLoading(true);
         setErro(null);
+        setPlayerData(null);
 
         const res = await axios.get(
           `http://localhost:3000/api/player/na/${nome}/${tag}`,
