@@ -32,7 +32,7 @@ CREATE TABLE `favoritos` (
   KEY `jogador_id` (`jogador_id`),
   CONSTRAINT `favoritos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `favoritos_ibfk_2` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,6 +50,10 @@ CREATE TABLE `jogadores` (
   `atualizado_em` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `criado_em` datetime DEFAULT current_timestamp(),
   `rank` varchar(50) DEFAULT NULL,
+  `card_small` varchar(255) DEFAULT NULL,
+  `card_large` varchar(255) DEFAULT NULL,
+  `card_wide` varchar(255) DEFAULT NULL,
+  `card_id` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_player` (`riot_name`,`riot_tag`),
   UNIQUE KEY `puuid` (`puuid`)
@@ -87,7 +91,7 @@ CREATE TABLE `partidas` (
   UNIQUE KEY `unique_jogador_match` (`jogador_id`,`match_id`),
   KEY `jogador_id` (`jogador_id`),
   CONSTRAINT `partidas_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=599 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +110,7 @@ CREATE TABLE `rank_snapshots` (
   PRIMARY KEY (`id`),
   KEY `jogador_id` (`jogador_id`),
   CONSTRAINT `rank_snapshots_ibfk_1` FOREIGN KEY (`jogador_id`) REFERENCES `jogadores` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,4 +140,4 @@ CREATE TABLE `usuarios` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-22  0:29:21
+-- Dump completed on 2026-06-27 12:46:12
