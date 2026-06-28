@@ -6,6 +6,7 @@ function DetalhesModal({
   agentImages = {},
   rankIcons = {},
   mapImages = {},
+  jogador = null,
 }) {
   if (!partida) return null;
 
@@ -176,6 +177,8 @@ function DetalhesModal({
                   roundsPlayed={roundsPlayed}
                   agentImages={agentImages}
                   rankIcons={rankIcons}
+                  jogador={jogador}
+                  resultado={partida.resultado}
                 />
 
                 <TeamTable
@@ -183,6 +186,8 @@ function DetalhesModal({
                   roundsPlayed={roundsPlayed}
                   agentImages={agentImages}
                   rankIcons={rankIcons}
+                  jogador={jogador}
+                  resultado={partida.resultado}
                 />
               </div>
             </div>
@@ -219,9 +224,35 @@ function ScoreCard({ time }) {
   );
 }
 
-function TeamTable({ time, roundsPlayed, agentImages, rankIcons }) {
+function TeamTable({
+  time,
+  roundsPlayed,
+  agentImages,
+  rankIcons,
+  jogador,
+  resultado,
+}) {
   const titleColor = time.won ? "text-green-300" : "text-red-300";
   const borderColor = time.won ? "border-green-500/30" : "border-red-500/30";
+
+  const destaqueJogador =
+    resultado === "Empate"
+      ? {
+          linha:
+            "bg-yellow-500/10 ring-1 ring-inset ring-yellow-500/40 hover:bg-yellow-500/15",
+          badge: "border-yellow-500/40 bg-yellow-500/10 text-yellow-300",
+        }
+      : time.won
+        ? {
+            linha:
+              "bg-green-500/10 ring-1 ring-inset ring-green-500/40 hover:bg-green-500/15",
+            badge: "border-green-500/40 bg-green-500/10 text-green-300",
+          }
+        : {
+            linha:
+              "bg-red-500/10 ring-1 ring-inset ring-red-500/40 hover:bg-red-500/15",
+            badge: "border-red-500/40 bg-red-500/10 text-red-300",
+          };
 
   return (
     <div
@@ -246,7 +277,7 @@ function TeamTable({ time, roundsPlayed, agentImages, rankIcons }) {
           const assists = player.stats?.assists || 0;
 
           const acs = calcAcs(player, roundsPlayed);
-          const danoPorRound = calcDanoPorRound(player, roundsPlayed);
+          const ddeltaPorRound = calcDdeltaPorRound(player, roundsPlayed);
           const hs = calcHeadshotPercent(player);
 
           const agentIcon = agentImages[player.character];
@@ -255,10 +286,21 @@ function TeamTable({ time, roundsPlayed, agentImages, rankIcons }) {
             ? rankIcons[player.currenttier_patched.toLowerCase()]
             : null;
 
+          const isJogadorPesquisado =
+            jogador?.puuid && player.puuid
+              ? player.puuid === jogador.puuid
+              : player.name?.toLowerCase() ===
+                  jogador?.riot_name?.toLowerCase() &&
+                player.tag?.toLowerCase() === jogador?.riot_tag?.toLowerCase();
+
           return (
             <div
               key={player.puuid}
-              className="grid grid-cols-[1fr_auto] gap-4 px-4 py-3 transition-colors hover:bg-white/[0.04]"
+              className={`grid grid-cols-[1fr_auto] gap-4 px-4 py-3 transition-colors ${
+                isJogadorPesquisado
+                  ? destaqueJogador.linha
+                  : "hover:bg-white/[0.04]"
+              }`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
@@ -281,6 +323,14 @@ function TeamTable({ time, roundsPlayed, agentImages, rankIcons }) {
                     <span className="font-normal text-gray-500">
                       #{player.tag}
                     </span>
+
+                    {isJogadorPesquisado && (
+                      <span
+                        className={`ml-2 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${destaqueJogador.badge}`}
+                      >
+                        Você
+                      </span>
+                    )}
                   </p>
 
                   <div className="mt-0.5 flex min-w-0 items-center gap-2 text-xs text-gray-500">
@@ -309,11 +359,11 @@ function TeamTable({ time, roundsPlayed, agentImages, rankIcons }) {
 
               <div className="grid grid-cols-4 gap-3 text-right text-sm">
                 <MiniValue
-                  label="KDA"
+                  label="K/D/A"
                   value={`${kills}/${deaths}/${assists}`}
                 />
                 <MiniValue label="ACS" value={acs} />
-                <MiniValue label="DMG/R" value={danoPorRound} />
+                <MiniValue label="DDΔ/R" value={ddeltaPorRound} />
                 <MiniValue label="HS%" value={`${hs}%`} />
               </div>
             </div>
@@ -341,10 +391,16 @@ function calcAcs(player, roundsPlayed) {
   return score > 0 && roundsPlayed > 0 ? Math.round(score / roundsPlayed) : 0;
 }
 
-function calcDanoPorRound(player, roundsPlayed) {
-  const damage = player.damage_made || 0;
+function calcDdeltaPorRound(player, roundsPlayed) {
+  const damageMade = player.damage_made || 0;
+  const damageReceived = player.damage_received || 0;
 
-  return damage > 0 && roundsPlayed > 0 ? Math.round(damage / roundsPlayed) : 0;
+  if (roundsPlayed <= 0) return "0.00";
+
+  const delta = (damageMade - damageReceived) / roundsPlayed;
+  const formatado = delta.toFixed(2);
+
+  return delta > 0 ? `+${formatado}` : formatado;
 }
 
 function calcHeadshotPercent(player) {

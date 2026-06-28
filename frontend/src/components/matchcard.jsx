@@ -28,25 +28,99 @@ function MatchCard({ partida, agentImages, onClick }) {
   const getKdColor = (kdr) => {
     const kd = Number(kdr);
 
-    if (Number.isNaN(kd)) return "text-white";
+    if (!Number.isFinite(kd)) return "text-white";
     if (kd >= 1) return "text-green-400";
 
     return "text-red-400";
   };
 
+  const getDeltaColor = (valor) => {
+    const delta = Number(valor);
+
+    if (!Number.isFinite(delta)) return "text-white";
+    if (delta >= 0) return "text-green-400";
+
+    return "text-red-400";
+  };
+
+  const getScoreColor = (score) => {
+    const valor = Number(score);
+
+    if (!Number.isFinite(valor)) return "text-white";
+
+    if (valor >= 80) return "text-blue-400";
+    if (valor >= 60) return "text-green-400";
+    if (valor >= 40) return "text-yellow-400";
+    if (valor >= 20) return "text-orange-400";
+
+    return "text-red-500";
+  };
+
+  const formatarNumero = (valor, casas = 2) => {
+    const numero = Number(valor);
+
+    if (!Number.isFinite(numero)) return "—";
+
+    return numero.toFixed(casas);
+  };
+
+  const formatarDelta = (valor) => {
+    const numero = Number(valor);
+
+    if (!Number.isFinite(numero)) return "—";
+
+    const formatado = numero.toFixed(2);
+
+    return numero > 0 ? `+${formatado}` : formatado;
+  };
+
   const resultadoStyle = getResultadoStyle(partida.resultado);
   const agentImage = agentImages[partida.agente];
-  const kdColor = getKdColor(partida.kdr);
+
+  const kills = Number(partida.kills || 0);
+  const deaths = Number(partida.deaths || 0);
+  const assists = Number(partida.assists || 0);
+
+  const kda =
+    partida.kda ??
+    partida.kda_partida ??
+    (deaths > 0
+      ? ((kills + assists) / deaths).toFixed(2)
+      : (kills + assists).toFixed(2));
+
+  const kdr = partida.kdr ?? "—";
+  const kdColor = getKdColor(kdr);
+
+  const acs = formatarNumero(partida.acs, 2);
+
+  const ddelta =
+    partida.ddelta_por_round ?? partida.ddelta ?? partida.delta_dano ?? null;
+
+  const ddeltaFormatado = formatarDelta(ddelta);
+  const ddeltaColor = getDeltaColor(ddelta);
+
+  const performanceScore =
+    partida.performance_score ??
+    partida.desempenho_score ??
+    partida.score_desempenho ??
+    partida.performanceScore ??
+    null;
+
+  const performanceScoreFormatado =
+    performanceScore !== null ? Math.round(Number(performanceScore)) : "—";
+
+  const scoreColor =
+    performanceScore !== null ? getScoreColor(performanceScore) : "text-white";
 
   return (
     <article
       onClick={onClick}
-      className="group relative overflow-visible cursor-pointer"
+      className="group relative cursor-pointer overflow-visible"
     >
       <div className="relative overflow-visible rounded-2xl border border-gray-800 bg-gray-950/80 p-3 transition-all hover:-translate-y-0.5 hover:border-gray-700 hover:bg-gray-900/90 hover:shadow-xl hover:shadow-black/30">
         {/* indicador lateral */}
         <div
-          className={`absolute left-0 top-4 bottom-4 w-1 rounded-r-full ${resultadoStyle.indicator}`}
+          className={`absolute bottom-4 left-0 top-4 w-1 rounded-r-full ${resultadoStyle.indicator}`}
         />
 
         <div className="relative z-10 flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -93,33 +167,35 @@ function MatchCard({ partida, agentImages, onClick }) {
           <div className="relative z-20 grid grid-cols-2 gap-3 overflow-visible sm:grid-cols-5 lg:min-w-[560px]">
             <MiniStat
               label="KDA"
-              value={`${partida.kills}/${partida.deaths}/${partida.assists}`}
-              tooltip="Abates, Mortes e Assistências nessa partida."
+              value={kda}
+              tooltip="KDA da partida: abates mais assistências dividido por mortes."
             />
 
             <MiniStat
               label="K/D"
-              value={partida.kdr ?? "—"}
+              value={kdr}
               valueClassName={kdColor}
-              tooltip="Média de Abates por Morte nessa partida."
+              tooltip="Abates dividido por mortes nessa partida."
             />
 
             <MiniStat
               label="ACS"
-              value={partida.acs ?? "—"}
-              tooltip="Pontuação de Combate nessa partida."
+              value={acs}
+              tooltip="Pontuação média de combate nessa partida."
             />
 
             <MiniStat
-              label="HS%"
-              value={`${partida.headshot_percent ?? "—"}%`}
-              tooltip="Porcentagem de tiros na cabeça nessa partida."
+              label="DDΔ/R"
+              value={ddeltaFormatado}
+              valueClassName={ddeltaColor}
+              tooltip="Delta de dano por round: dano causado menos dano recebido, dividido pelos rounds jogados."
             />
 
             <MiniStat
-              label="FB"
-              value={partida.first_bloods ?? "—"}
-              tooltip="Quantidade de primeiros abates."
+              label="Score"
+              value={performanceScoreFormatado}
+              valueClassName={scoreColor}
+              tooltip="Nota de desempenho da partida de 0 a 100."
             />
           </div>
         </div>

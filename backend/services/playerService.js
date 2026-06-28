@@ -16,6 +16,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
   const atualizadoRecentemente =
     jogador &&
     Date.now() - new Date(jogador.atualizado_em).getTime() < 2 * 60 * 1000;
+
   const forcarDefinitivo = forceUpdate && !atualizadoRecentemente;
 
   const precisaAtualizar =
@@ -24,19 +25,24 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
   // Se NÃO precisa atualizar, entra no fluxo normal de cache
   if (!precisaAtualizar) {
     const partidas = await partidaRepository.findByJogadorId(jogador.id);
+
     if (partidas && partidas.length > 0) {
       const partidasOrdenadas = partidas.sort(
         (a, b) => new Date(b.data_partida) - new Date(a.data_partida),
       );
+
       const ultimas10 = partidasOrdenadas.slice(0, 10);
+      const ultimas10ComPerformance =
+        adicionarPerformanceNasPartidas(ultimas10);
 
       return {
         fonte: "banco",
         jogador,
-        partidas: ultimas10,
+        partidas: ultimas10ComPerformance,
         stats: calcularEstatisticas(ultimas10),
       };
     }
+
     console.log(
       "Jogador encontrado no banco, mas sem partidas. Buscando na API...",
     );
@@ -68,6 +74,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
     const account = await accountRes.json();
     const mmr = await mmrRes.json();
     const matches = await matchesRes.json();
+
     const puuid = account.data.puuid;
     const novasPartidas = matches.data || [];
     const card = account.data?.card || null;
@@ -79,16 +86,21 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
     // Cria ou atualiza o perfil do jogador
     if (!jogador) {
       const jogadorPorPuuid = await jogadorRepository.findByPuuid(puuid);
+
       if (jogadorPorPuuid) {
         jogador = jogadorPorPuuid;
+
         await jogadorRepository.update(
           jogador.id,
           mmr.data?.current_data?.currenttierpatched,
+          card,
         );
       } else {
         const id = await jogadorRepository.create(name, tag, puuid);
         const rankAtual = mmr.data?.current_data?.currenttierpatched || null;
+
         await jogadorRepository.update(id, rankAtual, card);
+
         jogador = {
           id,
           riot_name: name,
@@ -103,6 +115,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         mmr.data?.current_data?.currenttierpatched,
         card,
       );
+
       await rankSnapshotRepository.save(
         jogador.id,
         mmr.data?.current_data?.currenttierpatched || null,
@@ -113,20 +126,25 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
     // Salva as partidas novas recebidas
     if (novasPartidas.length > 0) {
       let partidasSalvas = 0;
+
       for (const match of novasPartidas) {
         const jogadorDaPartida = match.players?.all_players?.find(
           (p) => p.puuid === puuid,
         );
+
         if (!jogadorDaPartida) continue;
 
         const rounds_played = match.metadata?.rounds_played || 1;
+
         const headshots = jogadorDaPartida?.stats?.headshots || 0;
         const bodyshots = jogadorDaPartida?.stats?.bodyshots || 0;
         const legshots = jogadorDaPartida?.stats?.legshots || 0;
         const totalShots = headshots + bodyshots + legshots;
+
         const damage_made = jogadorDaPartida?.damage_made || 0;
         const damage_received = jogadorDaPartida?.damage_received || 0;
         const score = jogadorDaPartida?.stats?.score || 0;
+
         const { firstBloods, aces } = calcularFirstBloodsEAces(match, puuid);
 
         const timeDoJogador = jogadorDaPartida?.team?.toLowerCase();
@@ -134,12 +152,14 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         const blueGanhou = match.teams?.blue?.has_won === true;
 
         let resultado;
+
         if (!redGanhou && !blueGanhou) {
           resultado = "Empate";
         } else {
           const jogadorGanhou =
             (timeDoJogador === "red" && redGanhou) ||
             (timeDoJogador === "blue" && blueGanhou);
+
           resultado = jogadorGanhou ? "Vitória" : "Derrota";
         }
 
@@ -163,7 +183,10 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
           headshot_percent:
             totalShots > 0 ? ((headshots / totalShots) * 100).toFixed(2) : 0,
           acs: (score / rounds_played).toFixed(2),
-          ddelta_por_round: ((damage_made - damage_received) / rounds_played).toFixed(2),
+          ddelta_por_round: (
+            (damage_made - damage_received) /
+            rounds_played
+          ).toFixed(2),
           first_bloods: firstBloods,
           aces,
           detalhes_json: JSON.stringify({
@@ -196,26 +219,33 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
             })),
           }),
         });
+
         partidasSalvas++;
       }
+
       console.log("Partidas salvas no banco:", partidasSalvas);
     }
 
     // Busca tudo do banco pós-salvamento e aplica limite/ordenação
     const todasPartidas = await partidaRepository.findByJogadorId(jogador.id);
+
     const todasPartidasOrdenadas = todasPartidas.sort(
       (a, b) => new Date(b.data_partida) - new Date(a.data_partida),
     );
+
     const ultimas10 = todasPartidasOrdenadas.slice(0, 10);
+    const ultimas10ComPerformance = adicionarPerformanceNasPartidas(ultimas10);
 
     if (todasPartidasOrdenadas.length > 10) {
       const partidasParaDeletar = todasPartidasOrdenadas.slice(10);
+
       for (const partidaAntiga of partidasParaDeletar) {
         await pool.query(
           "DELETE FROM partidas WHERE match_id = ? AND jogador_id = ?",
           [partidaAntiga.match_id, jogador.id],
         );
       }
+
       console.log(
         `Limpeza concluída: ${partidasParaDeletar.length} partidas antigas removidas.`,
       );
@@ -232,7 +262,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         card,
         atualizado_em: new Date(),
       },
-      partidas: ultimas10,
+      partidas: ultimas10ComPerformance,
       stats: calcularEstatisticas(ultimas10),
     };
   } catch (error) {
@@ -246,16 +276,21 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
       console.log(
         `[Fallback]: Retornando cache existente devido à instabilidade da API.`,
       );
+
       const partidas = await partidaRepository.findByJogadorId(jogador.id);
+
       const partidasOrdenadas = partidas.sort(
         (a, b) => new Date(b.data_partida) - new Date(a.data_partida),
       );
+
       const ultimas10 = partidasOrdenadas.slice(0, 10);
+      const ultimas10ComPerformance =
+        adicionarPerformanceNasPartidas(ultimas10);
 
       return {
         fonte: "banco_fallback",
         jogador,
-        partidas: ultimas10,
+        partidas: ultimas10ComPerformance,
         stats: calcularEstatisticas(ultimas10),
       };
     }
@@ -272,10 +307,12 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
 
 function dadosExpirados(atualizado_em) {
   if (!atualizado_em) return true;
+
   const minutosExpiracao = parseInt(process.env.CACHE_EXPIRATION_MINUTES) || 30;
   const milissegundosExpiracao = minutosExpiracao * 60 * 1000;
   const dataAtualizacao = new Date(atualizado_em);
   const diferencaTempo = Date.now() - dataAtualizacao.getTime();
+
   return diferencaTempo > milissegundosExpiracao;
 }
 
@@ -296,6 +333,10 @@ function statusVazio() {
     headshot_percent_medio: "0.00%",
     first_bloods_totais: 0,
     aces_totais: 0,
+    performance: {
+      score: 0,
+      rank: "C",
+    },
   };
 }
 
@@ -303,48 +344,59 @@ function calcularEstatisticas(partidas) {
   if (!partidas || partidas.length === 0) return statusVazio();
 
   const total = partidas.length;
+
   const vitorias = partidas.filter((p) => p.resultado === "Vitória").length;
   const empates = partidas.filter((p) => p.resultado === "Empate").length;
+
   const kills = partidas.reduce((acc, p) => acc + (p.kills || 0), 0);
   const deaths = partidas.reduce((acc, p) => acc + (p.deaths || 0), 0);
   const assists = partidas.reduce((acc, p) => acc + (p.assists || 0), 0);
+
   const acs = partidas.reduce((acc, p) => acc + parseFloat(p.acs || 0), 0);
-  const ddelta = partidas.reduce((acc, p) => acc + parseFloat(p.ddelta_por_round || 0), 0);
-  const hs = partidas.reduce((acc, p) => acc + parseFloat(p.headshot_percent || 0), 0);
-  const firstBloods = partidas.reduce((acc, p) => acc + (p.first_bloods || 0), 0);
+
+  const ddelta = partidas.reduce(
+    (acc, p) => acc + parseFloat(p.ddelta_por_round || 0),
+    0,
+  );
+
+  const hs = partidas.reduce(
+    (acc, p) => acc + parseFloat(p.headshot_percent || 0),
+    0,
+  );
+
+  const firstBloods = partidas.reduce(
+    (acc, p) => acc + (p.first_bloods || 0),
+    0,
+  );
+
   const aces = partidas.reduce((acc, p) => acc + (p.aces || 0), 0);
 
-  const kda_geral = deaths > 0 ? ((kills + assists) / deaths).toFixed(2) : (kills + assists).toFixed(2);
+  const kda_geral =
+    deaths > 0
+      ? ((kills + assists) / deaths).toFixed(2)
+      : (kills + assists).toFixed(2);
+
   const kdr_geral_num = deaths > 0 ? kills / deaths : kills;
 
-  // --- ALGORITMO DO PERFORMANCE SCORE (0 a 100)
-  const winrate_num = vitorias / total; // ex: 0.6 para 60%
+  // --- ALGORITMO DO PERFORMANCE SCORE GERAL (0 a 100)
+  const winrate_num = vitorias / total;
   const acs_medio_num = acs / total;
   const ddelta_medio_num = ddelta / total;
 
-  // matemática de cada componente
-  const score_winrate = Math.min(winrate_num * 100, 100);
-  const score_kdr = Math.min(kdr_geral_num * 50, 100); // 2.0 KDR = 100 pontos
-  const score_acs = Math.min((acs_medio_num / 250) * 100, 100); // 250 ACS = 100 pontos
-  const score_ddelta = Math.min(((ddelta_medio_num + 50) / 100) * 100, 100); // +50 Dano Delta = 100 pontos (evita negativos)
+  const score_winrate = limitarScore(winrate_num * 100);
+  const score_kdr = limitarScore(kdr_geral_num * 50);
+  const score_acs = limitarScore((acs_medio_num / 250) * 100);
+  const score_ddelta = limitarScore(((ddelta_medio_num + 50) / 100) * 100);
 
-  // Cálculo ponderado com pesos iguais
-  let performance_score = (
+  let performance_score =
     score_winrate * 0.25 +
     score_kdr * 0.25 +
     score_acs * 0.25 +
-    score_ddelta * 0.25
-  );
+    score_ddelta * 0.25;
 
-  // Garante travas de limite entre 0 e 100
-  performance_score = Math.max(0, Math.min(100, performance_score));
+  performance_score = limitarScore(performance_score);
 
-  //  Atribuir uma letra com base na pontuação
-  let performance_rank = "C";
-  if (performance_score >= 90) performance_rank = "S+";
-  else if (performance_score >= 80) performance_rank = "S";
-  else if (performance_score >= 65) performance_rank = "A";
-  else if (performance_score >= 50) performance_rank = "B";
+  const performance_rank = calcularPerformanceRank(performance_score);
 
   return {
     total_partidas: total,
@@ -364,31 +416,97 @@ function calcularEstatisticas(partidas) {
     aces_totais: aces,
     performance: {
       score: Math.round(performance_score),
-      rank: performance_rank
-    }
+      rank: performance_rank,
+    },
   };
+}
+
+function adicionarPerformanceNasPartidas(partidas) {
+  return partidas.map((partida) => {
+    const performance = calcularPerformancePartida(partida);
+
+    return {
+      ...partida,
+      performance_score: performance.score,
+      performance_rank: performance.rank,
+    };
+  });
+}
+
+function calcularPerformancePartida(partida) {
+  const kdr = Number(partida.kdr || 0);
+  const acs = Number(partida.acs || 0);
+  const ddelta = Number(partida.ddelta_por_round || 0);
+
+  let resultadoScore = 0;
+
+  if (partida.resultado === "Vitória") resultadoScore = 100;
+  else if (partida.resultado === "Empate") resultadoScore = 50;
+  else resultadoScore = 0;
+
+  const score_resultado = limitarScore(resultadoScore);
+  const score_kdr = limitarScore(kdr * 50);
+  const score_acs = limitarScore((acs / 250) * 100);
+  const score_ddelta = limitarScore(((ddelta + 50) / 100) * 100);
+
+  let performance_score =
+    score_resultado * 0.25 +
+    score_kdr * 0.25 +
+    score_acs * 0.25 +
+    score_ddelta * 0.25;
+
+  performance_score = limitarScore(performance_score);
+
+  return {
+    score: Math.round(performance_score),
+    rank: calcularPerformanceRank(performance_score),
+  };
+}
+
+function limitarScore(valor) {
+  const numero = Number(valor);
+
+  if (!Number.isFinite(numero)) return 0;
+
+  return Math.max(0, Math.min(100, numero));
+}
+
+function calcularPerformanceRank(score) {
+  if (score >= 90) return "S+";
+  if (score >= 80) return "S";
+  if (score >= 65) return "A";
+  if (score >= 50) return "B";
+
+  return "C";
 }
 
 function calcularFirstBloodsEAces(match, puuid) {
   const kills = match.kills || [];
+
   let firstBloods = 0;
   let aces = 0;
 
   const killsPorRound = {};
+
   for (const kill of kills) {
     const round = kill.round;
+
     if (!killsPorRound[round]) killsPorRound[round] = [];
+
     killsPorRound[round].push(kill);
   }
 
   for (const round in killsPorRound) {
     const killsDoRound = killsPorRound[round];
+
     const primeiroKill = killsDoRound.reduce((min, k) =>
       k.kill_time_in_round < min.kill_time_in_round ? k : min,
     );
+
     if (primeiroKill.killer_puuid === puuid) firstBloods++;
 
     const killsDoJogador = killsDoRound.filter((k) => k.killer_puuid === puuid);
+
     if (killsDoJogador.length >= 5) aces++;
   }
 

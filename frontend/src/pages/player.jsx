@@ -304,8 +304,8 @@ function Player() {
               />
 
               <StatCard
-                titulo="KDA"
-                valor={`${stats.kills_totais} / ${stats.deaths_totais} / ${stats.assists_totais}`}
+                titulo="KDA RATIO"
+                valor={`${stats.kda_geral}`}
                 tooltip="Média de Abates, Mortes e Assistências nas partidas analisadas."
               />
 
@@ -317,10 +317,14 @@ function Player() {
               />
 
               <StatCard
-                titulo="Dano/Round"
-                valor={stats.dano_por_round_medio}
-                cor="text-orange-400"
-                tooltip="Média de dano causado por round nas partidas analisadas."
+                titulo="DDΔ/Round"
+                valor={stats.ddelta_por_round_medio}
+                cor={
+                  Number(stats.ddelta_por_round_medio) >= 0
+                    ? "text-green-400"
+                    : "text-red-400"
+                }
+                tooltip="Delta de dano por round: dano causado menos dano recebido, dividido pelos rounds jogados."
               />
 
               <StatCard
@@ -399,6 +403,7 @@ function Player() {
           agentImages={agentImages}
           rankIcons={rankIcons}
           mapImages={mapImages}
+          jogador={jogador}
         />
       </div>
     </div>
