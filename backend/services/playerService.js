@@ -125,6 +125,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
         const legshots = jogadorDaPartida?.stats?.legshots || 0;
         const totalShots = headshots + bodyshots + legshots;
         const damage_made = jogadorDaPartida?.damage_made || 0;
+        const damage_received = jogadorDaPartida?.damage_received || 0;
         const score = jogadorDaPartida?.stats?.score || 0;
         const { firstBloods, aces } = calcularFirstBloodsEAces(match, puuid);
 
@@ -162,7 +163,7 @@ async function getPlayerData(region, name, tag, forceUpdate = false) {
           headshot_percent:
             totalShots > 0 ? ((headshots / totalShots) * 100).toFixed(2) : 0,
           acs: (score / rounds_played).toFixed(2),
-          dano_por_round: (damage_made / rounds_played).toFixed(2),
+          ddelta_por_round: ((damage_made - damage_received) / rounds_played).toFixed(2),
           first_bloods: firstBloods,
           aces,
           detalhes_json: JSON.stringify({
@@ -286,11 +287,12 @@ function statusVazio() {
     derrotas: 0,
     winrate: "0%",
     kdr_geral: "0.00",
+    kda_geral: "0.00",
     kills_totais: 0,
     deaths_totais: 0,
     assists_totais: 0,
     acs_medio: "0.00",
-    dano_por_round_medio: "0.00",
+    ddelta_por_round_medio: "0.00",
     headshot_percent_medio: "0.00%",
     first_bloods_totais: 0,
     aces_totais: 0,
@@ -307,8 +309,8 @@ function calcularEstatisticas(partidas) {
   const deaths = partidas.reduce((acc, p) => acc + (p.deaths || 0), 0);
   const assists = partidas.reduce((acc, p) => acc + (p.assists || 0), 0);
   const acs = partidas.reduce((acc, p) => acc + parseFloat(p.acs || 0), 0);
-  const dano = partidas.reduce(
-    (acc, p) => acc + parseFloat(p.dano_por_round || 0),
+  const ddelta = partidas.reduce(
+    (acc, p) => acc + parseFloat(p.ddelta_por_round || 0),
     0,
   );
   const hs = partidas.reduce(
@@ -321,6 +323,11 @@ function calcularEstatisticas(partidas) {
   );
   const aces = partidas.reduce((acc, p) => acc + (p.aces || 0), 0);
 
+  const kda_geral =
+    deaths > 0
+      ? ((kills + assists) / deaths).toFixed(2)
+      : (kills + assists).toFixed(2);
+
   return {
     total_partidas: total,
     vitorias,
@@ -328,11 +335,12 @@ function calcularEstatisticas(partidas) {
     derrotas: total - vitorias - empates,
     winrate: ((vitorias / total) * 100).toFixed(1) + "%",
     kdr_geral: deaths > 0 ? (kills / deaths).toFixed(2) : kills,
+    kda_geral,
     kills_totais: kills,
     deaths_totais: deaths,
     assists_totais: assists,
     acs_medio: (acs / total).toFixed(2),
-    dano_por_round_medio: (dano / total).toFixed(2),
+    ddelta_por_round_medio: (ddelta / total).toFixed(2),
     headshot_percent_medio: (hs / total).toFixed(2) + "%",
     first_bloods_totais: firstBloods,
     aces_totais: aces,
