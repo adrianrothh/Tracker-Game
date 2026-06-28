@@ -26,6 +26,18 @@ function Player() {
   const [mapImages, setMapImages] = useState({});
 
   useEffect(() => {
+    if (playerData?.jogador) {
+      document.title = `${playerData.jogador.riot_name}#${playerData.jogador.riot_tag} | Valorant Tracker`;
+    } else {
+      document.title = "Valorant Tracker";
+    }
+
+    return () => {
+      document.title = "Valorant Tracker";
+    };
+  }, [playerData]);
+
+  useEffect(() => {
     async function buscarMapas() {
       try {
         const res = await axios.get("https://valorant-api.com/v1/maps");

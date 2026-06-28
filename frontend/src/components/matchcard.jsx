@@ -69,24 +69,20 @@ function MatchCard({ partida, agentImages, onClick }) {
 
     if (!Number.isFinite(numero)) return "—";
 
-    const formatado = numero.toFixed(2);
+    const arredondado = Math.round(numero);
 
-    return numero > 0 ? `+${formatado}` : formatado;
+    return arredondado > 0 ? `+${arredondado}` : `${arredondado}`;
   };
 
   const resultadoStyle = getResultadoStyle(partida.resultado);
   const agentImage = agentImages[partida.agente];
+  const dataPartida = formatarDataPartida(partida.data_partida);
 
   const kills = Number(partida.kills || 0);
   const deaths = Number(partida.deaths || 0);
   const assists = Number(partida.assists || 0);
 
-  const kda =
-    partida.kda ??
-    partida.kda_partida ??
-    (deaths > 0
-      ? ((kills + assists) / deaths).toFixed(2)
-      : (kills + assists).toFixed(2));
+  const kda = `${kills}/${deaths}/${assists}`;
 
   const kdr = partida.kdr ?? "—";
   const kdColor = getKdColor(kdr);
@@ -157,8 +153,15 @@ function MatchCard({ partida, agentImages, onClick }) {
                 {partida.mapa || "Mapa desconhecido"}
               </h3>
 
-              <p className="mt-1 truncate text-sm text-gray-500">
-                {partida.agente || "Agente"}
+              <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                <span className="truncate">{partida.agente || "Agente"}</span>
+
+                {dataPartida && (
+                  <>
+                    <span className="text-gray-700">•</span>
+                    <span>{dataPartida}</span>
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -168,7 +171,7 @@ function MatchCard({ partida, agentImages, onClick }) {
             <MiniStat
               label="KDA"
               value={kda}
-              tooltip="KDA da partida: abates mais assistências dividido por mortes."
+              tooltip="Abates, mortes e assistências nessa partida."
             />
 
             <MiniStat
@@ -222,6 +225,16 @@ function MiniStat({ label, value, tooltip, valueClassName = "text-white" }) {
       </p>
     </div>
   );
+}
+
+function formatarDataPartida(data) {
+  if (!data) return null;
+
+  return new Date(data).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 export default MatchCard;
