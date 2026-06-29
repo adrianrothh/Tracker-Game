@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export function Navbar() {
   const location = useLocation();
@@ -29,18 +30,13 @@ export function Navbar() {
     try {
       setCarregandoFavoritos(true);
 
-      const res = await fetch("http://localhost:3000/api/favorites", {
+      const res = await api.get("/api/favorites", {
         headers: {
           Authorization: `Bearer ${tokenAtual}`,
         },
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setFavoritos([]);
-        return;
-      }
+      const data = res.data;
 
       setFavoritos(data.data || []);
     } catch (err) {

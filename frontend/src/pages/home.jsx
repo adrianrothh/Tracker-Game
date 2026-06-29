@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import api from "../services/api";
 
 export default function Home() {
   const [nome, setNome] = useState("");
@@ -17,7 +18,7 @@ export default function Home() {
       if (!token) return; // Se não estiver logado, não faz nada
 
       try {
-        const res = await axios.get("http://localhost:3000/api/favorites", {
+        const res = await api.get("/api/favorites", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

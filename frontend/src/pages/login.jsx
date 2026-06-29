@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,28 +12,20 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha }),
+      const res = await api.post("/api/auth/login", {
+        email,
+        senha,
       });
 
-      const data = await res.json();
+      const data = res.data;
 
       console.log("Resposta do Login:", data);
 
-      if (!res.ok) {
-        setMsg(data.message || "Erro ao fazer login");
-        return;
-      }
-
-      // 1. Caminho corrigido para puxar o token do lugar certo:
       localStorage.setItem("token", data.data.token);
 
-      // 2. Redirecionamento reativado (sem as barras //):
       navigate("/home");
     } catch (err) {
-      setMsg("Erro ao conectar com o servidor");
+      setMsg(err.response?.data?.message || "Erro ao fazer login");
     }
   }
 

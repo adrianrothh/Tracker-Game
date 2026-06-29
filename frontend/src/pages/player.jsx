@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import api from "../services/api";
 import StatCard from "../components/statcard";
 import MatchCard from "../components/matchcard";
 import PlayerHeader from "../components/playerheader";
@@ -70,9 +71,7 @@ function Player() {
         setPlayerData(null);
         setRanksPartidas({});
 
-        const res = await axios.get(
-          `http://localhost:3000/api/player/na/${nome}/${tag}`,
-        );
+        const res = await api.get(`/api/player/na/${nome}/${tag}`);
 
         setPlayerData(res.data.data);
       } catch (err) {
@@ -101,7 +100,7 @@ function Player() {
       if (!token) return;
 
       try {
-        const res = await axios.get("http://localhost:3000/api/favorites", {
+        const res = await api.get("/api/favorites", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -198,8 +197,8 @@ function Player() {
         const resultados = await Promise.all(
           partidasAtuais.map(async (partida) => {
             try {
-              const res = await axios.get(
-                `http://localhost:3000/api/player/match/${jogadorAtual.id}/${partida.match_id}`,
+              const res = await api.get(
+                `/api/player/match/${jogadorAtual.id}/${partida.match_id}`,
               );
 
               const detalhes = res.data?.data?.detalhes;
@@ -255,15 +254,15 @@ function Player() {
 
     try {
       if (isFavorito) {
-        await axios.delete(`http://localhost:3000/api/favorites/${favId}`, {
+        await api.delete(`/api/favorites/${favId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         setIsFavorito(false);
         setFavId(null);
       } else {
-        const res = await axios.post(
-          "http://localhost:3000/api/favorites",
+        const res = await api.post(
+          "/api/favorites",
           { riot_name: nome, riot_tag: tag },
           { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -313,8 +312,8 @@ function Player() {
     setCarregandoDetalhes(true);
 
     try {
-      const res = await axios.get(
-        `http://localhost:3000/api/player/match/${jogador.id}/${partida.match_id}`,
+      const res = await api.get(
+        `/api/player/match/${jogador.id}/${partida.match_id}`,
       );
 
       setDetalhesPartida(res.data.data);

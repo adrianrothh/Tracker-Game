@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export default function Cadastrar() {
   const [nome, setNome] = useState("");
@@ -19,24 +20,13 @@ export default function Cadastrar() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nome,
-          email,
-          senha,
-        }),
+      const res = await api.post("/api/auth/register", {
+        nome,
+        email,
+        senha,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setMsg(data.message || "Erro ao cadastrar");
-        return;
-      }
+      const data = res.data;
 
       setMsg("Cadastro realizado com sucesso!");
 
@@ -47,7 +37,7 @@ export default function Cadastrar() {
 
       navigate("/login");
     } catch (err) {
-      setMsg("Erro ao conectar com o servidor");
+      setMsg(err.response?.data?.message || "Erro ao cadastrar");
     }
   }
 
