@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 async function save(jogador_id, rank, rr) {
   await pool.query(
-    'INSERT INTO rank_snapshots (jogador_id, rank, rr) VALUES (?, ?, ?)',
+    'INSERT INTO rank_snapshots (jogador_id, `rank`, rr) VALUES (?, ?, ?)',
     [jogador_id, rank, rr]
   );
 }

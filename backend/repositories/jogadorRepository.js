@@ -38,7 +38,7 @@ async function create(riot_name, riot_tag, puuid) {
 async function update(id, rank, card = null) {
   await pool.query(
     `UPDATE jogadores 
-     SET rank = ?, 
+     SET `rank` = ?, 
          card_small = ?, 
          card_large = ?, 
          card_wide = ?, 
