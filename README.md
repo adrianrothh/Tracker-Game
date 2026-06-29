@@ -19,8 +19,6 @@ O objetivo é permitir que jogadores analisem sua performance individual e colet
 # Documentação
 Docs: https://docs.google.com/document/d/10zyYRMdJ-1-PjafNZCO0_HPoKCHyt4fspAqVL9izmyI/edit?usp=sharing
 
-
-
 ---
 # RF
 
@@ -88,31 +86,27 @@ RNF05 – As rotas privadas devem ser protegidas por middleware de autenticaçã
 
 RNF06 – O sistema deve utilizar HTTPS em ambiente de produção.
 
-RNF07 – O sistema deve validar entradas de dados para prevenir ataques como SQL Injection e XSS.
+RNF07 – O backend deve seguir arquitetura em camadas no padrão MVC.
 
-RNF08 – O backend deve seguir arquitetura em camadas no padrão MVC.
+RNF08 – O sistema deve utilizar ORM para abstração do acesso ao banco de dados na versão completa do projeto.
 
-RNF09 – O sistema deve utilizar ORM para abstração do acesso ao banco de dados na versão completa do projeto.
+RNF9 – A API deve seguir o padrão REST utilizando comunicação via JSON.
 
-RNF10 – A API deve seguir o padrão REST utilizando comunicação via JSON.
+RNF10 – O código-fonte deve ser versionado utilizando Git.
 
-RNF11 – O código-fonte deve ser versionado utilizando Git.
+RNF11 – O sistema deve ser compatível com os navegadores Google Chrome, Microsoft Edge e Mozilla Firefox.
 
-RNF12 – O sistema deve ser compatível com os navegadores Google Chrome, Microsoft Edge e Mozilla Firefox.
+RNF12 – O sistema deve possuir interface responsiva para desktop.
 
-RNF13 – O sistema deve possuir interface responsiva para desktop.
+RNF13 – O sistema deve possuir testes unitários automatizados.
 
-RNF14 – O sistema deve possuir testes unitários automatizados.
+RNF14 – O sistema deve permitir deploy em ambiente de nuvem para frontend e backend.
 
-RNF15 – O sistema deve possuir monitoramento de erros em ambiente de produção.
+RNF15 – O sistema deve implementar estratégia de cache baseada em data de atualização.
 
-RNF16 – O sistema deve permitir deploy em ambiente de nuvem para frontend e backend.
+RNF16 – O sistema deve garantir integridade referencial entre usuários, jogadores e partidas.
 
-RNF17 – O sistema deve implementar estratégia de cache baseada em data de atualização.
-
-RNF18 – O sistema deve garantir integridade referencial entre usuários, jogadores e partidas.
-
-RNF19 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
+RNF17 – O sistema deve evitar requisições desnecessárias à API externa para reduzir latência e risco de rate limit.
 
 ---
 # Diagramas
