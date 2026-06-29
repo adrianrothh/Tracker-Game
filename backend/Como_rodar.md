@@ -49,23 +49,27 @@ Depois volta no XAMPP e clica em **Stop** no MySQL.
 ### Autenticação
 
 | Método | Rota | Auth | Descrição |
+|---|---|---|---|
 | POST | `/api/auth/register` | publico | Cadastro de usuário |
 | POST | `/api/auth/login` | publico | Login e geração de token JWT |
 
 ### Usuário
 | Método | Rota | Auth | Descrição |
+|---|---|---|---|
 | GET | `/api/user/profile` | Privado | Ver perfil do usuário |
 | DELETE | `/api/user` | Privado | Excluir conta |
 
 ### Jogador
 
 | Método | Rota | Auth | Descrição |
+|---|---|---|---|
 | GET | `/api/player/:region/:name/:tag` | Publico | Busca dados do jogador |
 | POST | `/api/player/update/:region/:name/:tag` | Publico | Força atualização dos dados |
 | GET | `/api/player/rank-history/:region/:name/:tag` | Publico | Histórico de rank |
 
 ### Favoritos
 | Método | Rota | Auth | Descrição |
+|---|---|---|---|
 | POST | `/api/favorites` | Privado | Favoritar jogador |
 | GET | `/api/favorites` | Privado | Listar favoritos |
 | DELETE | `/api/favorites/:id` | Privado | Remover favorito |
